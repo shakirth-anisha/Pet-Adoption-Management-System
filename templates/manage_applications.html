@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-info mb-4">Manage Adoption Applications</h3>
+
+    <table class="table table-dark table-hover align-middle rounded-3 overflow-hidden shadow-sm">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Adopter</th>
+                <th>Pet</th>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>Shelter</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>{{ app.adopt_app_id }}</td>
+                <td>{{ app.adopter_name }}</td>
+                <td>{{ app.pet_name }}</td>
+                <td>{{ app.status }}</td>
+                <td>{{ app.reason }}</td>
+                <td>{{ app.shelter_name }}</td>
+                <td>{{ app.date.strftime("%Y-%m-%d") if app.date else "" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
