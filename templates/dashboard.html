@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    <!-- Card 1: Total Pets by Type -->
+    <div class="col">
+        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
+            <h5 class="card-title text-center fw-bold mb-2">Total Pets by Type</h5>
+            <div class="flex-grow-1 d-flex align-items-end justify-content-center">
+                <canvas id="petsChart" style="height: 140px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Adoption Status -->
+    <div class="col">
+        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
+            <h5 class="card-title text-center fw-bold mb-2">Adoption Status</h5>
+            <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                <canvas id="applicationsChart" style="height: 140px; width: 140px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Users by Role -->
+    <div class="col">
+        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
+            <h5 class="card-title text-center fw-bold mb-2">Users by Role</h5>
+            <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                <canvas id="usersChart" style="height: 140px; width: 140px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 4: Pets per Shelter -->
+    <div class="col">
+        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
+            <h5 class="card-title text-center fw-bold mb-2">Pets per Shelter</h5>
+            <div class="flex-grow-1 d-flex align-items-end justify-content-center">
+                <canvas id="sheltersChart" style="height: 140px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const petsData = {{ pets_data|safe }};
+    const applicationsData = {{ applications_data|safe }};
+    const usersData = {{ users_data|safe }};
+    const sheltersData = {{ shelters_data|safe }};
+
+    // Total Pets by Type (Bar)
+    new Chart(document.getElementById('petsChart'), {
+        type: 'bar',
+        data: {
+            labels: petsData.labels,
+            datasets: [{
+                label: 'Total Pets',
+                data: petsData.values,
+                backgroundColor: '#bfc0d1'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: '#bfc0d1' } },
+                x: { ticks: { color: '#bfc0d1' } }
+            }
+        }
+    });
+
+    // Adoption Status (Doughnut)
+    new Chart(document.getElementById('applicationsChart'), {
+        type: 'doughnut',
+        data: {
+            labels: applicationsData.labels,
+            datasets: [{
+                data: applicationsData.values,
+                backgroundColor: ['#60519b','#bfc0d1','#31323c']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { color: '#bfc0d1' } } }
+        }
+    });
+
+    // Users by Role (Pie)
+    new Chart(document.getElementById('usersChart'), {
+        type: 'pie',
+        data: {
+            labels: usersData.labels,
+            datasets: [{
+                data: usersData.values,
+                backgroundColor: ['#60519b','#bfc0d1','#31323c','#1e202c']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { color: '#bfc0d1' } } }
+        }
+    });
+
+    // Pets per Shelter (Bar)
+    new Chart(document.getElementById('sheltersChart'), {
+        type: 'bar',
+        data: {
+            labels: sheltersData.labels,
+            datasets: [{
+                label: 'Pets per Shelter',
+                data: sheltersData.values,
+                backgroundColor: '#bfc0d1'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: '#bfc0d1' } },
+                x: { ticks: { color: '#bfc0d1' } }
+            }
+        }
+    });
+</script>
+{% endblock %}

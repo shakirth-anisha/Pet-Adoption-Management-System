@@ -64,6 +64,13 @@ CREATE TABLE Pet (
     CONSTRAINT chk_pet_status CHECK (status IN ('Available', 'Adopted', 'Medical Hold'))
 );
 
+CREATE TABLE PetImages (
+    image_id INT AUTO_INCREMENT PRIMARY KEY,
+    pet_id INT NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    FOREIGN KEY (pet_id) REFERENCES Pets(pet_id) ON DELETE CASCADE
+);
+
 CREATE TABLE AdoptionApplication (
     adopt_app_id INT AUTO_INCREMENT PRIMARY KEY,
     date DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -165,7 +172,7 @@ VALUES
 -- PET TYPES
 INSERT INTO PetType (species, breed, life_span, size)
 VALUES
-('Dog', 'Labrador Retriever', 12, 'Large'),
+('Dog', 'Shih Tzu', 12, 'Small'),
 ('Dog', 'Beagle', 14, 'Medium'),
 ('Cat', 'Persian', 15, 'Small'),
 ('Parrot', 'African Grey', 50, 'Small'),
@@ -182,6 +189,17 @@ VALUES
 ('Snowball', 'F', 4, 'Health issues', 'Medical Hold', 3, 5),
 ('Zoomie', 'F', 2, 'Rescued stray cat', 'Available', 2, 3),
 ('Coco', 'M', 1, 'Owner could not care for it', 'Available', 3, 4);
+
+-- PET IMAGES
+INSERT INTO PetImages (pet_id, image_url)
+VALUES
+(1, "https://i.anga.codes/i/5zaft9djp9rh/ShihTzu.png"),
+(1, ""),
+(1, ""),
+(1, ""),
+(1, ""),
+(1, ""),
+(1, "");
 
 -- ADOPTION APPLICATIONS
 INSERT INTO AdoptionApplication (status, reason, approved_by, pet_id, user_id)
