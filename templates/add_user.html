@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mt-4 mb-5 text-secondary display-4 fw-light">Register a New User</h1>
+
+    {% if message %}
+    <div class="alert alert-{{ alert_class }} alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        Status: {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <form method="POST">
+                        <fieldset class="mb-5 border p-4 rounded bg-white">
+                            <legend class="float-none w-auto px-2 fs-5 text-primary">User Details</legend>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="userName" class="form-label fw-bold">Full Name</label>
+                                    <input type="text" id="userName" name="name" class="form-control form-control-lg" placeholder="Enter full name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="userEmail" class="form-label fw-bold">Email Address</label>
+                                    <input type="email" id="userEmail" name="email" class="form-control form-control-lg" placeholder="example@email.com" required>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-6">
+                                    <label for="userPhone" class="form-label fw-bold">Phone Number</label>
+                                    <input type="tel" id="userPhone" name="phone" class="form-control form-control-lg" placeholder="Enter phone number">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="userRole" class="form-label fw-bold">User Role</label>
+                                    <select id="userRole" name="role" class="form-select form-select-lg" required>
+                                        <option value="">Select Role</option>
+                                        <option value="general">General</option>
+                                        <option value="adopter">Adopter</option>
+                                        <option value="shelter_worker">Shelter Worker</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3">
+                            <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">
+                                <i class="bi bi-person-plus-fill me-2"></i> Register User
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

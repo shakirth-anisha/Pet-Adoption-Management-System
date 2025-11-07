@@ -189,7 +189,7 @@ VALUES
 ('Snowball', 'F', 4, 'Health issues', 'Medical Hold', 3, 5),
 ('Zoomie', 'F', 2, 'Rescued stray cat', 'Available', 2, 3),
 ('Coco', 'M', 1, 'Owner could not care for it', 'Available', 3, 4),
-('Coffee', 'F', 2, 'Rescued stray cat', 'Available', 2, 7);
+('Coffee', 'F', 2, 'Rescued stray cat', 'Adopted', 2, 7);
 
 -- PET IMAGES
 INSERT INTO PetImages (pet_id, image_url)

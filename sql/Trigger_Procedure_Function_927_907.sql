@@ -136,6 +136,33 @@ BEGIN
 END;
 //
 
+-- Add a new user
+DELIMITER //
+
+CREATE PROCEDURE AddUser (
+    IN p_name VARCHAR(100),
+    IN p_email VARCHAR(150),
+    IN p_phone VARCHAR(20),
+    IN p_role ENUM('general', 'adopter', 'shelter_worker', 'admin')
+)
+BEGIN
+    DECLARE v_exists INT;
+
+    -- Check if email already exists
+    SELECT COUNT(*) INTO v_exists
+    FROM User
+    WHERE email = p_email;
+
+    IF v_exists > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Email already exists. Please use a different one.';
+    ELSE
+        INSERT INTO User (name, email, phone, role)
+        VALUES (p_name, p_email, p_phone, p_role);
+    END IF;
+END;
+//
+
 -- Register a New Pet
 CREATE PROCEDURE RegisterPet (
     IN p_name VARCHAR(100),
@@ -279,9 +306,9 @@ CALL RegisterPet('Buddy', 'M', 3, 'Friendly and playful', 'Available', 1, 1);
 SELECT * FROM Pet;
 
 -- AddAdoptionApplication Procedure
-SELECT * FROM AdoptionApplication;
-CALL AddAdoptionApplication(9, 7, 'Looking to adopt a friendly dog');
-SELECT * FROM AdoptionApplication;
+-- SELECT * FROM AdoptionApplication;
+-- CALL AddAdoptionApplication(9, 7, 'Looking to adopt a friendly dog');
+-- SELECT * FROM AdoptionApplication;
 
 -- Approve a pending application and auto trigger adoption + reject others
 SELECT * FROM Pet WHERE pet_id = 5;  -- Zoomie

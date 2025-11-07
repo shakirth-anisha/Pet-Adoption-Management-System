@@ -1,17 +1,18 @@
 from flask import Flask, render_template, redirect, url_for, request
-from pages import dashboard, manage_pets, view_pets, register_pet, add_application, manage_applications, view_all_data
+from pages import dashboard, add_user, manage_pets, view_pets, register_pet, add_application, manage_applications, view_all_data
 
 app = Flask(__name__)
 
 nav_options = {
     "Dashboard": "dashboard",
+    "Add User": "add_user",
     "View Pets": "view_pets",
     "Add Adoption Application": "add_application",
     "Manage Applications": "manage_applications",
     "Register Pet": "register_pet",
     "Manage Pets": "manage_pets",
     "View All Data": "view_all_data",
-    "Test Functions": "test_functions"
+    "Test Procedural Extensions": "test_procedural_extensions"
 }
 
 
@@ -27,6 +28,10 @@ def render_page(page_name):
     if page_name == "dashboard":
         context.update(dashboard.get_dashboard_data())
         return render_template("dashboard.html", **context)
+    
+    elif page_name == "add_user":
+        context.update(add_user.handle_add_user(request))
+        return render_template("add_user.html", **context)
     
     elif page_name == "view_pets":
         context.update(view_pets.get_view_pets_data())
