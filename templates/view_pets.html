@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-info mb-3">Available Pets</h3>
+
+    <table class="table table-dark table-hover rounded-3 overflow-hidden">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Species</th>
+                <th>Breed</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Status</th>
+                <th>Shelter</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pet in pets %}
+            <tr>
+                <td>{{ pet.pet_id }}</td>
+                <td>{{ pet.pet_name }}</td>
+                <td>{{ pet.species }}</td>
+                <td>{{ pet.breed }}</td>
+                <td>{{ pet.gender }}</td>
+                <td>{{ pet.age }}</td>
+                <td>{{ pet.status }}</td>
+                <td>{{ pet.shelter_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+    
