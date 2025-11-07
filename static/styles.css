@@ -1,0 +1,87 @@
+/* Color Palette */
+.bg-main {
+    background-color: #1e202c !important;
+}
+
+.bg-sidebar {
+    background-color: #31323c !important;
+}
+
+.bg-card {
+    background-color: #60519b !important;
+}
+
+.text-secondary {
+    color: #bfc0d1 !important;
+}
+
+/* Sidebar */
+.sidebar {
+    min-height: 100vh;
+}
+
+.nav-link {
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.nav-link.active {
+    background-color: #bfc0d1 !important;
+    color: #1e202c !important;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(191,192,209,0.5);
+}
+
+/* Cards */
+.card {
+    border-radius: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+/* Main content spacing */
+.content-area {
+    min-height: 100vh;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5 {
+    color: #bfc0d1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+    }
+    .content-area {
+        padding-top: 2rem;
+    }
+}
+
+/* Dark theme card */
+.bg-card {
+    background-color: #31323c;
+    color: #bfc0d1;
+    border-radius: 10px;
+}
+
+/* Card hover effect */
+.hover-card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+}
+
+/* Card text smaller */
+.card-title {
+    font-size: 1rem;
+}
+
+/* Reduce chart spacing */
+canvas {
+    max-width: 100%;
+}
