@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-info mb-4">Analytics & Insights</h3>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <!-- Avg Pet Age per Shelter -->
+        <div class="col">
+            <div class="card bg-card text-secondary shadow-sm p-3 h-100">
+                <h5 class="card-title text-center mb-2">Average Pet Age per Shelter</h5>
+                <div class="d-flex align-items-end justify-content-center flex-grow-1">
+                    <canvas id="avgAgeChart" style="height:160px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top 5 Users by Adoptions -->
+        <div class="col">
+            <div class="card bg-card text-secondary shadow-sm p-3 h-100">
+                <h5 class="card-title text-center mb-2">Top 5 Adopters</h5>
+                <div class="d-flex align-items-end justify-content-center flex-grow-1">
+                    <canvas id="userAdoptionsChart" style="height:160px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments by Method -->
+        <div class="col">
+            <div class="card bg-card text-secondary shadow-sm p-3 h-100">
+                <h5 class="card-title text-center mb-2">Payments by Method</h5>
+                <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                    <canvas id="paymentChart" style="height:160px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pet Status Overview -->
+        <div class="col">
+            <div class="card bg-card text-secondary shadow-sm p-3 h-100">
+                <h5 class="card-title text-center mb-2">Pet Status Overview</h5>
+                <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                    <canvas id="petStatusChart" style="height:160px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const avgAgeData = {{ avg_age_data | tojson }};
+    const adoptionsData = {{ adoptions_by_user | tojson }};
+    const paymentData = {{ payment_data | tojson }};
+    const petStatusData = {{ pet_status_data | tojson }};
+
+    // Avg Pet Age per Shelter (Bar)
+    new Chart(document.getElementById('avgAgeChart'), {
+        type: 'bar',
+        data: {
+            labels: avgAgeData.labels,
+            datasets: [{
+                label: 'Average Age',
+                data: avgAgeData.values,
+                backgroundColor: '#bfc0d1'
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    // Top 5 Adopters (Horizontal Bar)
+    new Chart(document.getElementById('userAdoptionsChart'), {
+        type: 'bar',
+        data: {
+            labels: adoptionsData.labels,
+            datasets: [{
+                label: 'Total Adoptions',
+                data: adoptionsData.values,
+                backgroundColor: '#60519b'
+            }]
+        },
+        options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    // Payments by Method (Pie)
+    new Chart(document.getElementById('paymentChart'), {
+        type: 'pie',
+        data: {
+            labels: paymentData.labels,
+            datasets: [{
+                data: paymentData.values,
+                backgroundColor: ['#60519b','#bfc0d1','#31323c','#1e202c']
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#bfc0d1' } } } }
+    });
+
+    // Pet Status (Doughnut)
+    new Chart(document.getElementById('petStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: petStatusData.labels,
+            datasets: [{
+                data: petStatusData.values,
+                backgroundColor: ['#60519b','#bfc0d1','#31323c']
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#bfc0d1' } } } }
+    });
+</script>
+{% endblock %}
