@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request
-from pages import dashboard, manage_pets, view_pets, register_pet, add_application, manage_applications, analytics
+from pages import dashboard, manage_pets, view_pets, register_pet, add_application, manage_applications, analytics, view_all_data
 
 app = Flask(__name__)
 
@@ -40,6 +40,7 @@ def render_page(page_name):
     elif page_name == "manage_applications":
         context.update(manage_applications.get_manage_applications_data())
         return render_template("manage_applications.html", **context)   
+    
     elif page_name == "register_pet":
         context.update(register_pet.handle_register_pet(request))
         return render_template("register_pet.html", **context)
@@ -51,6 +52,10 @@ def render_page(page_name):
     elif page_name == "analytics":
         context.update(analytics.get_analytics_data())
         return render_template("analytics.html", **context)
+    
+    elif page_name == "view_all_data":
+        context.update(view_all_data.handle_view_all_data(request))
+        return render_template("view_all_data.html", **context)
 
     elif page_name in nav_options.values():
         context["message"] = f"Page '{page_name}' is not implemented yet."
