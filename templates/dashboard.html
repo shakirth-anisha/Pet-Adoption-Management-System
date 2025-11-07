@@ -42,6 +42,27 @@
             </div>
         </div>
     </div>
+
+    <!-- Card 5: Top 5 Adopters -->
+    <div class="col">
+        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
+            <h5 class="card-title text-center fw-bold mb-2">Top 5 Adopters</h5>
+            <div class="flex-grow-1 d-flex align-items-end justify-content-center">
+                <canvas id="adoptersChart" style="height: 140px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 6: Payments by Method -->
+    <div class="col">
+        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
+            <h5 class="card-title text-center fw-bold mb-2">Payments by Method</h5>
+            <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                <canvas id="paymentsChart" style="height: 140px; width: 140px;"></canvas>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- Chart.js -->
@@ -51,6 +72,8 @@
     const applicationsData = {{ applications_data|safe }};
     const usersData = {{ users_data|safe }};
     const sheltersData = {{ shelters_data|safe }};
+    const paymentsData = {{ payments_data|safe }};
+    const adoptersData = {{ adopters_data|safe }};
 
     // Total Pets by Type (Bar)
     new Chart(document.getElementById('petsChart'), {
@@ -127,6 +150,46 @@
                 y: { beginAtZero: true, ticks: { color: '#bfc0d1' } },
                 x: { ticks: { color: '#bfc0d1' } }
             }
+        }
+    });
+
+    // Top 5 Adopters
+    new Chart(document.getElementById('adoptersChart'), {
+        type: 'bar',
+        data: {
+            labels: adoptersData.labels,
+            datasets: [{
+                label: 'Approved Adoptions',
+                data: adoptersData.values,
+                backgroundColor: '#bfc0d1'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { beginAtZero: true, ticks: { color: '#bfc0d1' } },
+                y: { ticks: { color: '#bfc0d1' } }
+            }
+        }
+    });
+
+    // Payments by Method 
+    new Chart(document.getElementById('paymentsChart'), {
+        type: 'doughnut',
+        data: {
+            labels: paymentsData.labels,
+            datasets: [{
+                data: paymentsData.values,
+                backgroundColor: ['#60519b', '#bfc0d1', '#31323c', '#1e202c']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { color: '#bfc0d1' } } }
         }
     });
 </script>

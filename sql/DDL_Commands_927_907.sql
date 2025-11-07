@@ -188,7 +188,8 @@ VALUES
 ('Luna', 'F', 1, 'Abandoned kitten', 'Available', 1, 7),
 ('Snowball', 'F', 4, 'Health issues', 'Medical Hold', 3, 5),
 ('Zoomie', 'F', 2, 'Rescued stray cat', 'Available', 2, 3),
-('Coco', 'M', 1, 'Owner could not care for it', 'Available', 3, 4);
+('Coco', 'M', 1, 'Owner could not care for it', 'Available', 3, 4),
+('Coffee', 'F', 2, 'Rescued stray cat', 'Available', 2, 7);
 
 -- PET IMAGES
 INSERT INTO PetImages (pet_id, image_url)
@@ -208,7 +209,8 @@ VALUES
 ('Approved', 'Looking for a friendly dog', 1, 1, 3), -- Angad approved for Yuki
 ('Pending', 'Not enough space at home', NULL, 2, 7), -- Risu denied for Milo
 ('Pending', 'Want a small pet for my apartment', NULL, 3, 8), -- Taylor applying for Luna
-('Approved', 'Need a companinion', 2, 2, 9); -- Harry applying for Milo
+('Approved', 'Need a companinion', 2, 2, 9), -- Harry applying for Milo
+('Approved', 'Looking for a companion for my dog', 1, 7, 3); -- Angad approved for Coffee
 
 -- PAYMENTS
 
