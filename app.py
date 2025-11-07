@@ -1,22 +1,43 @@
-from flask import Flask, render_template
-from utils.db import get_connection
+from flask import Flask, render_template, redirect, url_for, request
+from pages import dashboard, manage_pets
 
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    return render_template('base.html')
+nav_options = {
+    "Dashboard": "dashboard",
+    "View Pets": "view_pets",
+    "Add Adoption Application": "add_application",
+    "Manage Applications": "manage_applications",
+    "Register Pet": "register_pet",
+    "Manage Pets": "manage_pets",
+    "Analytics": "analytics",
+    "View All Data": "view_all_data",
+    "Test Functions": "test_functions"
+}
 
-@app.route("/test_db")
-def test_db():
-    conn = get_connection()
-    if conn:
-        with conn.cursor() as cur:
-            cur.execute("SELECT NOW() AS time;")
-            result = cur.fetchone()
-        conn.close()
-        return f"Database connected successfully! Server time: {result['time']}"
-    return "Database connection failed."
+@app.route("/")
+def home():
+    return redirect(url_for("render_page", page_name="dashboard"))
 
-if __name__ == '__main__':
+@app.route("/page/<page_name>")
+def render_page(page_name):
+    context = {"nav_options": nav_options, "current_page": page_name}
+
+    if page_name == "dashboard":
+        context.update(dashboard.get_dashboard_data())
+        return render_template("dashboard.html", **context)
+    
+    elif page_name == "manage_pets":
+        context.update(manage_pets.handle_manage_pets(request))
+        return render_template("manage_pets.html", **context)
+
+    elif page_name in nav_options.values():
+        context["message"] = f"Page '{page_name}' is not implemented yet."
+        return render_template("placeholder.html", **context)
+
+    else:
+        # Page does not exist at all
+        return f"Page '{page_name}' does not exist.", 404
+
+if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center mt-4 mb-4 text-secondary">Manage Pets</h1>
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for pet in pets %}
+    <div class="col">
+        <div class="card bg-card hover-card h-100 shadow">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-center text-secondary">{{ pet.name }}</h5>
+
+                <ul class="list-unstyled flex-grow-1">
+                    <li>ID: {{ pet.pet_id }}</li>
+                    <li>Species: {{ pet.species }}</li>
+                    <li>Breed: {{ pet.breed }}</li>
+                    <li>Age: {{ pet.age }}</li>
+                    <li>Gender: {{ pet.gender }}</li>
+                    <li>Shelter: {{ pet.shelter_name }}</li>
+                </ul>
+
+                <hr class="text-secondary my-2">
+                
+                <p class="mb-2">Status: {% if pet.status == "Adopted" %}
+                        <span class="badge bg-success">{{ pet.status }}</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">{{ pet.status }}</span>
+                    {% endif %}
+                </p>
+
+                <hr class="text-secondary my-2">
+
+                {% if pet.status != "Adopted" %}
+                <form method="POST" class="mt-2 mb-3">
+                    <input type="hidden" name="pet_id" value="{{ pet.pet_id }}">
+                    <div class="input-group input-group-sm">
+                        <select name="status" class="form-select form-select-sm">
+                            <option value="Available" {% if pet.status=="Available" %}selected{% endif %}>Available</option>
+                            <option value="Medical Hold" {% if pet.status=="Medical Hold" %}selected{% endif %}>Medical Hold</option>
+                        </select>
+                        <button type="submit" name="action" value="update_status" class="btn btn-sm btn-primary">Update</button>
+                    </div>
+                </form>
+                {% else %}
+                <p class="text-success small fst-italic mt-2 mb-3">Status cannot be changed for adopted pets.</p>
+                {% endif %}
+
+                <div class="mt-auto pt-2">
+                    <form method="POST">
+                        <input type="hidden" name="pet_id" value="{{ pet.pet_id }}">
+                        <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger w-100">Delete Pet</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
