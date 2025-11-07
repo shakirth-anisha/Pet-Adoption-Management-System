@@ -283,13 +283,6 @@ SELECT * FROM AdoptionApplication;
 CALL AddAdoptionApplication(9, 7, 'Looking to adopt a friendly dog');
 SELECT * FROM AdoptionApplication;
 
-
--- Prevent Duplicate Adoption Trigger
--- INSERT INTO AdoptionApplication (status, reason, pet_id, user_id)
--- VALUES ('Pending', 'Trying to adopt an already adopted pet', 1, 7);
--- Expect error: "This pet has already been adopted."
-
-
 -- Approve a pending application and auto trigger adoption + reject others
 SELECT * FROM Pet WHERE pet_id = 5;  -- Zoomie
 SELECT * FROM AdoptionApplication WHERE pet_id = 5;
