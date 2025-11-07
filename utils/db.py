@@ -3,7 +3,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 import os
 
-# Load environment variables from .env file
 load_dotenv()
 
 LOG_FILE = "db_log.txt"
