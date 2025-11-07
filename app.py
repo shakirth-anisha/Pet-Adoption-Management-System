@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request
-from pages import dashboard, manage_pets, view_pets
+from pages import dashboard, manage_pets, view_pets, register_pet
 
 app = Flask(__name__)
 
@@ -32,6 +32,10 @@ def render_page(page_name):
     elif page_name == "view_pets":
         context.update(view_pets.get_view_pets_data())
         return render_template("view_pets.html", **context)
+    
+    elif page_name == "register_pet":
+        context.update(register_pet.handle_register_pet(request))
+        return render_template("register_pet.html", **context)
 
     elif page_name == "manage_pets":
         context.update(manage_pets.handle_manage_pets(request))
