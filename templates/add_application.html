@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-info mb-4">Submit an Adoption Application</h3>
+
+    {% if message %}
+        <div class="alert alert-info text-center">{{ message }}</div>
+    {% endif %}
+
+    <form method="POST" class="p-4 bg-dark rounded-3 shadow-sm">
+        <div class="mb-3">
+            <label for="user_id" class="form-label text-light">Select User</label>
+            <select name="user_id" id="user_id" class="form-select" required>
+                {% for user in users %}
+                <option value="{{ user.user_id }}">{{ user.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="pet_id" class="form-label text-light">Select Pet</label>
+            <select name="pet_id" id="pet_id" class="form-select" required>
+                {% for pet in pets %}
+                <option value="{{ pet.pet_id }}">{{ pet.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="reason" class="form-label text-light">Reason for Adoption</label>
+            <textarea name="reason" id="reason" rows="3" class="form-control" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Submit Application</button>
+    </form>
+</div>
+{% endblock %}
