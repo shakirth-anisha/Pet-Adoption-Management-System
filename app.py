@@ -38,7 +38,7 @@ def render_page(page_name):
         return render_template("view_pets.html", **context)
     
     elif page_name == "add_application":
-        context.update(add_application.get_add_application_data())
+        context.update(add_application.get_add_application_data(request))
         return render_template("add_application.html", **context)
     
     elif page_name == "manage_applications":
