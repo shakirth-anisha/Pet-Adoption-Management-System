@@ -4,11 +4,30 @@
     <meta charset="UTF-8">
     <title>Pet Adoption Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <style>
-        .off-white-bg {
-            background-color: #E6E6E6FF !important;
+        :root {
+            --sidebar-bg: #f8f9fa;
+            --sidebar-hover: #e9ecef;
+            --sidebar-active: #4B52D7;
+            --sidebar-active-bg: #e7f1ff;
+            --main-bg: #ffffff;
+            --text-primary: #2c3e50;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            background-color: var(--main-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .sidebar-nav {
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            min-height: 100vh;
         }
         
         @media (min-width: 768px) {
@@ -23,54 +42,97 @@
 
         .main-content {
             margin-left: 16.66666667%;
+            background-color: var(--main-bg);
+            min-height: 100vh;
         }
         
         .mobile-toggler {
             background-color: transparent !important;
             border: none !important;
-            color: #333 !important;
+            color: var(--text-primary) !important;
+            font-size: 1.5rem;
         }
         .mobile-toggler:hover {
             opacity: 0.7;
         }
         
-        .off-white-bg h4, .off-white-bg .nav-link {
-            color: #333333 !important;
+        .sidebar-nav h4 {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.1rem;
         }
-        .off-white-bg .nav-link.active {
-            color: #4B52D7FF !important;
-            background-color: #D1D2F0FF !important;
+        
+        .sidebar-nav .nav-link {
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-nav .nav-link:hover {
+            background-color: var(--sidebar-hover);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-nav .nav-link.active {
+            color: var(--sidebar-active) !important;
+            background-color: var(--sidebar-active-bg) !important;
+            font-weight: 600;
+        }
+
+        .card {
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .btn-primary {
+            background-color: var(--sidebar-active);
+            border-color: var(--sidebar-active);
+        }
+
+        .btn-primary:hover {
+            background-color: #3a42c6;
+            border-color: #3a42c6;
         }
     </style>
 </head>
 <body>
     <div class="container-fluid">
-        <div class="d-md-none p-3 border-bottom off-white-bg">
+        <div class="d-md-none p-3 border-bottom bg-light">
             <button class="btn mobile-toggler" type="button" 
                 data-bs-toggle="offcanvas" 
                 data-bs-target="#sidebarOffcanvas" 
                 aria-controls="sidebarOffcanvas">
-                ☰
+                <i class="bi bi-list"></i>
             </button>
+            <span class="ms-2 fw-bold text-primary">Pet Adoption System</span>
         </div>
         
         <div class="row">
             
-            <nav class="col-md-2 py-4 offcanvas-md offcanvas-start fixed-sidebar off-white-bg" 
+            <nav class="col-md-2 py-4 offcanvas-md offcanvas-start fixed-sidebar sidebar-nav" 
                  tabindex="-1" 
                  id="sidebarOffcanvas" 
                  aria-labelledby="sidebarOffcanvasLabel"
                  data-bs-scroll="true">
                 
                 <div class="offcanvas-header d-md-none">
-                    <h5 class="offcanvas-title" id="sidebarOffcanvasLabel"></h5>
+                    <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">Menu</h5>
                     <button type="button" class="btn-close" 
                             data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 
                 <div class="offcanvas-body d-md-block">
                     
-                    <h4 class="text-center mb-4">Navigation</h4>
+                    <h4 class="text-center mb-4 d-none d-md-block">
+                        <i class="bi bi-heart-fill text-danger me-2"></i>Pet Adoption
+                    </h4>
                     
                     <div class="nav flex-column">
                         {% for label, endpoint in nav_options.items() %}

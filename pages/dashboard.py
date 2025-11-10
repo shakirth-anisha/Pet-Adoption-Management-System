@@ -1,3 +1,4 @@
+import json
 from utils.db import run_query
 
 def get_dashboard_data():
@@ -81,10 +82,10 @@ def get_dashboard_data():
     }
 
     return {
-        "pets_data": pets_data,
-        "applications_data": applications_data,
-        "users_data": users_data,
-        "shelters_data": shelters_data,
-        "payments_data": payments_data,
-        "adopters_data": adopters_data
+        "pets_data": json.dumps(pets_data),
+        "applications_data": json.dumps(applications_data),
+        "users_data": json.dumps(users_data),
+        "shelters_data": json.dumps(shelters_data),
+        "payments_data": json.dumps(payments_data),
+        "adopters_data": json.dumps(adopters_data)
     }
