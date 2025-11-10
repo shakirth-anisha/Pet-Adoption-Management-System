@@ -42,7 +42,7 @@ def render_page(page_name):
         return render_template("add_application.html", **context)
     
     elif page_name == "manage_applications":
-        context.update(manage_applications.get_manage_applications_data())
+        context.update(manage_applications.handle_manage_applications(request))
         return render_template("manage_applications.html", **context)   
     
     elif page_name == "register_pet":
