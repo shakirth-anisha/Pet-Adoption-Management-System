@@ -1,68 +1,143 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="text-center mt-4 mb-4 text-secondary">Dashboard</h1>
-<div class="row row-cols-1 row-cols-md-2 g-4">
-    <!-- Card 1: Total Pets by Type -->
-    <div class="col">
-        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
-            <h5 class="card-title text-center fw-bold mb-2">Total Pets by Type</h5>
-            <div class="flex-grow-1 d-flex align-items-end justify-content-center">
-                <canvas id="petsChart" style="height: 140px;"></canvas>
+<div class="container-fluid py-4">
+    <!-- Header with Welcome Message -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="fw-light text-secondary mb-2">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+            </h1>
+            <p class="text-muted">Welcome to the Pet Adoption Management System</p>
+        </div>
+    </div>
+
+    <!-- Quick Stats Row -->
+    <div class="row mb-4 g-3">
+        <div class="col-md-3">
+            <div class="card border-0 bg-primary bg-opacity-10 h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-grid-3x3-gap-fill text-primary fs-1 mb-2"></i>
+                    <h3 class="mb-0 text-primary" id="totalPets">0</h3>
+                    <p class="mb-0 text-muted small">Total Pets</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-success bg-opacity-10 h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-check-fill text-success fs-1 mb-2"></i>
+                    <h3 class="mb-0 text-success" id="totalApplications">0</h3>
+                    <p class="mb-0 text-muted small">Applications</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-info bg-opacity-10 h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill text-info fs-1 mb-2"></i>
+                    <h3 class="mb-0 text-info" id="totalUsers">0</h3>
+                    <p class="mb-0 text-muted small">Total Users</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 bg-warning bg-opacity-10 h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-building-fill text-warning fs-1 mb-2"></i>
+                    <h3 class="mb-0 text-warning" id="totalShelters">0</h3>
+                    <p class="mb-0 text-muted small">Shelters</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Card 2: Adoption Status -->
-    <div class="col">
-        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
-            <h5 class="card-title text-center fw-bold mb-2">Adoption Status</h5>
-            <div class="flex-grow-1 d-flex align-items-center justify-content-center">
-                <canvas id="applicationsChart" style="height: 140px; width: 140px;"></canvas>
+    <!-- Charts Grid -->
+    <div class="row g-4">
+        <!-- Pets by Type -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bi bi-bar-chart-fill text-primary me-2"></i>Pets by Type
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="petsChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Adoption Status -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bi bi-pie-chart-fill text-success me-2"></i>Adoption Status
+                    </h6>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <canvas id="applicationsChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pets per Shelter -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bi bi-building text-warning me-2"></i>Pets per Shelter
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="sheltersChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users by Role -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bi bi-people text-info me-2"></i>Users by Role
+                    </h6>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <canvas id="usersChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Adopters -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bi bi-trophy-fill text-warning me-2"></i>Top 5 Adopters
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="adoptersChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments by Method -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="bi bi-credit-card-fill text-success me-2"></i>Payments by Method
+                    </h6>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <canvas id="paymentsChart" height="200"></canvas>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Card 3: Users by Role -->
-    <div class="col">
-        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
-            <h5 class="card-title text-center fw-bold mb-2">Users by Role</h5>
-            <div class="flex-grow-1 d-flex align-items-center justify-content-center">
-                <canvas id="usersChart" style="height: 140px; width: 140px;"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 4: Pets per Shelter -->
-    <div class="col">
-        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
-            <h5 class="card-title text-center fw-bold mb-2">Pets per Shelter</h5>
-            <div class="flex-grow-1 d-flex align-items-end justify-content-center">
-                <canvas id="sheltersChart" style="height: 140px;"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 5: Top 5 Adopters -->
-    <div class="col">
-        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
-            <h5 class="card-title text-center fw-bold mb-2">Top 5 Adopters</h5>
-            <div class="flex-grow-1 d-flex align-items-end justify-content-center">
-                <canvas id="adoptersChart" style="height: 140px;"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 6: Payments by Method -->
-    <div class="col">
-        <div class="card bg-card text-secondary shadow-sm h-100 hover-card d-flex flex-column p-3" style="min-height: 260px;">
-            <h5 class="card-title text-center fw-bold mb-2">Payments by Method</h5>
-            <div class="flex-grow-1 d-flex align-items-center justify-content-center">
-                <canvas id="paymentsChart" style="height: 140px; width: 140px;"></canvas>
-            </div>
-        </div>
-    </div>
-
 </div>
 
 <!-- Chart.js -->
@@ -75,7 +150,36 @@
     const paymentsData = {{ payments_data|safe }};
     const adoptersData = {{ adopters_data|safe }};
 
-    // Total Pets by Type (Bar)
+    // Update stat cards
+    document.getElementById('totalPets').textContent = petsData.values.reduce((a, b) => a + b, 0);
+    document.getElementById('totalApplications').textContent = applicationsData.values.reduce((a, b) => a + b, 0);
+    document.getElementById('totalUsers').textContent = usersData.values.reduce((a, b) => a + b, 0);
+    document.getElementById('totalShelters').textContent = sheltersData.labels.length;
+
+    // Modern color palette
+    const colors = {
+        primary: ['#4B52D7', '#667eea', '#764ba2', '#f093fb'],
+        success: ['#10b981', '#34d399', '#6ee7b7'],
+        warning: ['#f59e0b', '#fbbf24', '#fcd34d'],
+        info: ['#3b82f6', '#60a5fa', '#93c5fd'],
+        gradient: 'rgba(75, 82, 215, 0.1)'
+    };
+
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 15,
+                    font: { size: 12 }
+                }
+            }
+        }
+    };
+
+    // Pets by Type (Bar)
     new Chart(document.getElementById('petsChart'), {
         type: 'bar',
         data: {
@@ -83,16 +187,26 @@
             datasets: [{
                 label: 'Total Pets',
                 data: petsData.values,
-                backgroundColor: '#bfc0d1'
+                backgroundColor: colors.primary[0],
+                borderRadius: 8,
+                borderWidth: 0
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            ...chartOptions,
+            plugins: {
+                legend: { display: false }
+            },
             scales: {
-                y: { beginAtZero: true, ticks: { color: '#bfc0d1' } },
-                x: { ticks: { color: '#bfc0d1' } }
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: { font: { size: 11 } }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { font: { size: 11 } }
+                }
             }
         }
     });
@@ -104,14 +218,12 @@
             labels: applicationsData.labels,
             datasets: [{
                 data: applicationsData.values,
-                backgroundColor: ['#60519b','#bfc0d1','#31323c']
+                backgroundColor: [colors.success[0], colors.warning[0], colors.primary[1]],
+                borderWidth: 0,
+                spacing: 2
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { color: '#bfc0d1' } } }
-        }
+        options: chartOptions
     });
 
     // Users by Role (Pie)
@@ -121,14 +233,12 @@
             labels: usersData.labels,
             datasets: [{
                 data: usersData.values,
-                backgroundColor: ['#60519b','#bfc0d1','#31323c','#1e202c']
+                backgroundColor: colors.info,
+                borderWidth: 0,
+                spacing: 2
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { color: '#bfc0d1' } } }
-        }
+        options: chartOptions
     });
 
     // Pets per Shelter (Bar)
@@ -139,21 +249,31 @@
             datasets: [{
                 label: 'Pets per Shelter',
                 data: sheltersData.values,
-                backgroundColor: '#bfc0d1'
+                backgroundColor: colors.warning[0],
+                borderRadius: 8,
+                borderWidth: 0
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            ...chartOptions,
+            plugins: {
+                legend: { display: false }
+            },
             scales: {
-                y: { beginAtZero: true, ticks: { color: '#bfc0d1' } },
-                x: { ticks: { color: '#bfc0d1' } }
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: { font: { size: 11 } }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { font: { size: 11 } }
+                }
             }
         }
     });
 
-    // Top 5 Adopters
+    // Top 5 Adopters (Horizontal Bar)
     new Chart(document.getElementById('adoptersChart'), {
         type: 'bar',
         data: {
@@ -161,36 +281,44 @@
             datasets: [{
                 label: 'Approved Adoptions',
                 data: adoptersData.values,
-                backgroundColor: '#bfc0d1'
+                backgroundColor: colors.success[1],
+                borderRadius: 8,
+                borderWidth: 0
             }]
         },
         options: {
             indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            ...chartOptions,
+            plugins: {
+                legend: { display: false }
+            },
             scales: {
-                x: { beginAtZero: true, ticks: { color: '#bfc0d1' } },
-                y: { ticks: { color: '#bfc0d1' } }
+                x: { 
+                    beginAtZero: true,
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: { font: { size: 11 } }
+                },
+                y: { 
+                    grid: { display: false },
+                    ticks: { font: { size: 11 } }
+                }
             }
         }
     });
 
-    // Payments by Method 
+    // Payments by Method (Doughnut)
     new Chart(document.getElementById('paymentsChart'), {
         type: 'doughnut',
         data: {
             labels: paymentsData.labels,
             datasets: [{
                 data: paymentsData.values,
-                backgroundColor: ['#60519b', '#bfc0d1', '#31323c', '#1e202c']
+                backgroundColor: [colors.success[0], colors.primary[0], colors.warning[0], colors.info[0]],
+                borderWidth: 0,
+                spacing: 2
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { color: '#bfc0d1' } } }
-        }
+        options: chartOptions
     });
 </script>
 {% endblock %}
