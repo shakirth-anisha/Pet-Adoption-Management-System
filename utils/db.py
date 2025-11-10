@@ -35,7 +35,7 @@ def run_query(query, params=None, fetch=False):
         conn.close()
 
 def run_procedure(proc_name, params=None, fetch=True):
-    """Call a stored procedure."""
+    """Call a stored procedure. Raises exceptions for caller to handle."""
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
@@ -43,5 +43,8 @@ def run_procedure(proc_name, params=None, fetch=True):
             data = cursor.fetchall() if fetch else None
         conn.commit()
         return data
+    except Exception as e:
+        conn.rollback()
+        raise  # Re-raise the exception for caller to handle
     finally:
         conn.close()

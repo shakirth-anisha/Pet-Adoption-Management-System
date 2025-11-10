@@ -1,38 +1,80 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h3 class="text-info mb-4">Submit an Adoption Application</h3>
+<div class="container py-5">
+    <h1 class="text-center mt-4 mb-5 text-secondary display-4 fw-light">Submit an Adoption Application</h1>
 
     {% if message %}
-        <div class="alert alert-info text-center">{{ message }}</div>
+        {% if success %}
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                {{ message }}
+                <hr>
+                <a href="{{ url_for('render_page', page_name='manage_applications') }}" class="btn btn-sm btn-outline-success">
+                    View All Applications
+                </a>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% else %}
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
     {% endif %}
 
-    <form method="POST" class="p-4 bg-dark rounded-3 shadow-sm">
-        <div class="mb-3">
-            <label for="user_id" class="form-label text-light">Select User</label>
-            <select name="user_id" id="user_id" class="form-select" required>
-                {% for user in users %}
-                <option value="{{ user.user_id }}">{{ user.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <form method="POST">
+                        <fieldset class="mb-5 border p-4 rounded bg-white">
+                            <legend class="float-none w-auto px-2 fs-5 text-primary">Application Details</legend>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="user_id" class="form-label fw-bold">Select Adopter</label>
+                                    <select name="user_id" id="user_id" class="form-select form-select-lg" required>
+                                        <option value="" disabled selected>Choose an adopter</option>
+                                        {% for user in users %}
+                                        <option value="{{ user.user_id }}">{{ user.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
 
-        <div class="mb-3">
-            <label for="pet_id" class="form-label text-light">Select Pet</label>
-            <select name="pet_id" id="pet_id" class="form-select" required>
-                {% for pet in pets %}
-                <option value="{{ pet.pet_id }}">{{ pet.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+                                <div class="col-md-6">
+                                    <label for="pet_id" class="form-label fw-bold">Select Pet</label>
+                                    <select name="pet_id" id="pet_id" class="form-select form-select-lg" required>
+                                        <option value="" disabled selected>Choose a pet</option>
+                                        {% for pet in pets %}
+                                        <option value="{{ pet.pet_id }}">{{ pet.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if not pets %}
+                                        <div class="form-text text-warning"><i class="bi bi-exclamation-circle me-1"></i>No pets are currently available for adoption.</div>
+                                    {% endif %}
+                                </div>
+                            </div>
 
-        <div class="mb-3">
-            <label for="reason" class="form-label text-light">Reason for Adoption</label>
-            <textarea name="reason" id="reason" rows="3" class="form-control" required></textarea>
-        </div>
+                            <div class="row g-3 mt-3">
+                                <div class="col-12">
+                                    <label for="reason" class="form-label fw-bold">Reason for Adoption</label>
+                                    <textarea name="reason" id="reason" rows="5" class="form-control form-control-lg" 
+                                              placeholder="Explain why you want to adopt this pet..." required></textarea>
+                                </div>
+                            </div>
+                        </fieldset>
 
-        <button type="submit" class="btn btn-primary w-100">Submit Application</button>
-    </form>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3">
+                            <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm" {% if not pets %}disabled{% endif %}>
+                                <i class="bi bi-file-earmark-check-fill me-2"></i> Submit Application
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
