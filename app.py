@@ -34,7 +34,7 @@ def render_page(page_name):
         return render_template("add_user.html", **context)
     
     elif page_name == "view_pets":
-        context.update(view_pets.get_view_pets_data())
+        context.update(view_pets.handle_view_pets(request))
         return render_template("view_pets.html", **context)
     
     elif page_name == "add_application":
