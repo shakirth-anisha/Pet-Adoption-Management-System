@@ -1,34 +1,99 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h3 class="text-info mb-4">Manage Adoption Applications</h3>
+<h1 class="text-center mt-4 mb-4 text-secondary">Manage Adoption Applications</h1>
 
-    <table class="table table-dark table-hover align-middle rounded-3 overflow-hidden shadow-sm">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Adopter</th>
-                <th>Pet</th>
-                <th>Status</th>
-                <th>Reason</th>
-                <th>Shelter</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for app in applications %}
-            <tr>
-                <td>{{ app.adopt_app_id }}</td>
-                <td>{{ app.adopter_name }}</td>
-                <td>{{ app.pet_name }}</td>
-                <td>{{ app.status }}</td>
-                <td>{{ app.reason }}</td>
-                <td>{{ app.shelter_name }}</td>
-                <td>{{ app.date.strftime("%Y-%m-%d") if app.date else "" }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% if message %}
+<div class="alert alert-{{ alert_class }} text-center mt-4">{{ message }}</div>
+{% endif %}
+
+<!-- Application Status Filters -->
+<div class="d-flex justify-content-center gap-3 mb-5">
+    <a href="?status=All" class="btn btn-outline-secondary {% if not request.args.get('status') or request.args.get('status') == 'All' %}active{% endif %}">
+        All
+    </a>
+    <a href="?status=Pending" class="btn btn-outline-warning {% if request.args.get('status') == 'Pending' %}active{% endif %}">
+        Pending
+    </a>
+    <a href="?status=Approved" class="btn btn-outline-success {% if request.args.get('status') == 'Approved' %}active{% endif %}">
+        Approved
+    </a>
+    <a href="?status=Denied" class="btn btn-outline-danger {% if request.args.get('status') == 'Denied' %}active{% endif %}">
+        Denied
+    </a>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for app in applications %}
+    <div class="col">
+        <div class="card bg-card hover-card h-100 shadow">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-center text-secondary">App ID: {{ app.adopt_app_id }}</h5>
+
+                <ul class="list-unstyled flex-grow-1 mb-3">
+                    <li>Applicant: {{ app.user_name }}</li>
+                    <li class="mt-2">Pet: #{{ app.pet_id }} — {{ app.pet_name }} <span class="badge bg-info">{{ app.pet_status }}</span></li>
+                </ul>
+                
+                <p class="mb-2">
+                    Status:
+                    {% if app.status == 'Pending' %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif app.status == 'Approved' %}
+                        <span class="badge bg-success">Approved</span>
+                    {% elif app.status == 'Denied' %}
+                        <span class="badge bg-danger">Denied</span>
+                    {% endif %}
+                </p>
+
+                <p class="small text-muted mb-3">
+                    Reason: {{ app.reason or "N/A" }}
+                </p>
+                
+                <hr class="text-secondary my-2">
+
+                {% if app.status != 'Denied' %}
+                    <p class="small mb-1">
+                        Approved By: {{ app.approved_by or "—" }}
+                    </p>
+                    <hr class="text-secondary my-2">
+                {% endif %}
+
+                <div class="mt-auto pt-2">
+                    {% if app.status == 'Pending' %}
+                    <h6 class="small text-secondary mb-2">Take Action</h6>
+                    
+                    <!-- APPROVE FORM -->
+                    <form method="POST" class="mb-3 border-bottom pb-3">
+                        <input type="hidden" name="action" value="approve">
+                        <input type="hidden" name="app_id" value="{{ app.adopt_app_id }}">
+                        
+                        <div class="input-group input-group-sm">
+                            <input type="number" name="worker_id"
+                                placeholder="Worker ID" class="form-control" required>
+                            <button class="btn btn-success btn-sm">Approve</button>
+                        </div>
+                    </form>
+
+                    <!-- REJECT FORM -->
+                    <form method="POST">
+                        <input type="hidden" name="action" value="reject">
+                        <input type="hidden" name="app_id" value="{{ app.adopt_app_id }}">
+
+                        <textarea name="reject_reason" class="form-control form-control-sm mb-2"
+                            placeholder="Rejection reason" required rows="2"></textarea>
+
+                        <button class="btn btn-danger btn-sm w-100">Reject Application</button>
+                    </form>
+
+                    {% else %}
+                    <p class="text-muted small fst-italic mt-2 mb-3">No further actions available for {{ app.status }}.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}
