@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request
 from pages import dashboard, add_user, manage_pets, view_pets, register_pet, add_application, manage_applications, view_all_data
 
 app = Flask(__name__)
+app.secret_key = 'your-secret-key-here-change-in-production'  # Required for flash messages
 
 nav_options = {
     "Dashboard": "dashboard",
@@ -42,7 +43,20 @@ def render_page(page_name):
         return render_template("add_application.html", **context)
     
     elif page_name == "manage_applications":
-        context.update(manage_applications.get_manage_applications_data())
+        if request.method == "POST":
+            action = request.form.get("action")
+            app_id = request.form.get("app_id")
+            worker_id = request.form.get("worker_id")
+            
+            if action == "approve":
+                manage_applications.approve_application(app_id, worker_id)
+            elif action == "reject":
+                reason = request.form.get("reject_reason", "No reason provided")
+                manage_applications.reject_application(app_id, reason, worker_id)
+            
+            return redirect(url_for("render_page", page_name="manage_applications"))
+        
+        context.update(manage_applications.handle_manage_applications(request))
         return render_template("manage_applications.html", **context)   
     
     elif page_name == "register_pet":

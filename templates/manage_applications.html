@@ -1,34 +1,287 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h3 class="text-info mb-4">Manage Adoption Applications</h3>
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="fw-light text-secondary mb-2">
+                <i class="bi bi-clipboard-check me-2"></i>Manage Adoption Applications
+            </h1>
+            <p class="text-muted">Review, approve, or reject adoption applications</p>
+        </div>
+    </div>
 
-    <table class="table table-dark table-hover align-middle rounded-3 overflow-hidden shadow-sm">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Adopter</th>
-                <th>Pet</th>
-                <th>Status</th>
-                <th>Reason</th>
-                <th>Shelter</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for app in applications %}
-            <tr>
-                <td>{{ app.adopt_app_id }}</td>
-                <td>{{ app.adopter_name }}</td>
-                <td>{{ app.pet_name }}</td>
-                <td>{{ app.status }}</td>
-                <td>{{ app.reason }}</td>
-                <td>{{ app.shelter_name }}</td>
-                <td>{{ app.date.strftime("%Y-%m-%d") if app.date else "" }}</td>
-            </tr>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'error' else 'warning' }} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'error' else 'info-circle' }} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
             {% endfor %}
-        </tbody>
-    </table>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Filter Section -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('render_page', page_name='manage_applications') }}" class="row g-3">
+                <div class="col-md-4">
+                    <label for="statusFilter" class="form-label">
+                        <i class="bi bi-funnel me-1"></i>Filter by Status
+                    </label>
+                    <select id="statusFilter" name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Applications</option>
+                        <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending Only</option>
+                        <option value="Approved" {% if status_filter == 'Approved' %}selected{% endif %}>Approved</option>
+                        <option value="Denied" {% if status_filter == 'Denied' %}selected{% endif %}>Denied</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="px-4 py-3">ID</th>
+                            <th class="py-3">Adopter</th>
+                            <th class="py-3">Pet Info</th>
+                            <th class="py-3">Shelter</th>
+                            <th class="py-3">Status</th>
+                            <th class="py-3">Reason</th>
+                            <th class="py-3">Date</th>
+                            <th class="py-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if applications %}
+                            {% for app in applications %}
+                            <tr>
+                                <td class="px-4"><span class="badge bg-secondary">#{{ app.adopt_app_id }}</span></td>
+                                <td>
+                                    <div>
+                                        <strong>{{ app.adopter_name }}</strong>
+                                        <br><small class="text-muted">{{ app.adopter_email }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <i class="bi bi-{{ 'dog' if 'dog' in app.pet_type.lower() else 'cat' if 'cat' in app.pet_type.lower() else 'heart' }} me-1"></i>
+                                        <strong>{{ app.pet_name }}</strong>
+                                        <br><small class="text-muted">{{ app.pet_type }}, {{ app.pet_age }} yrs</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <small><i class="bi bi-building me-1"></i>{{ app.shelter_name }}</small>
+                                </td>
+                                <td>
+                                    {% if app.status == 'Pending' %}
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-clock me-1"></i>Pending
+                                        </span>
+                                    {% elif app.status == 'Approved' %}
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>Approved
+                                        </span>
+                                        {% if app.approved_by_name %}
+                                        <br><small class="text-muted mt-1">by {{ app.approved_by_name }}</small>
+                                        {% endif %}
+                                    {% elif app.status == 'Denied' %}
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle me-1"></i>Denied
+                                        </span>
+                                        {% if app.approved_by_name %}
+                                        <br><small class="text-muted mt-1">by {{ app.approved_by_name }}</small>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td><small class="text-muted">{{ app.reason[:50] }}{{ '...' if app.reason|length > 50 else '' }}</small></td>
+                                <td><small class="text-muted">{{ app.date.strftime("%b %d, %Y") if app.date else "N/A" }}</small></td>
+                                <td class="text-center">
+                                    {% if app.status == 'Pending' %}
+                                        <button type="button" class="btn btn-sm btn-success me-1" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#approveModal{{ app.adopt_app_id }}"
+                                                title="Approve Application">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#rejectModal{{ app.adopt_app_id }}"
+                                                title="Reject Application">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    {% else %}
+                                        <span class="text-muted small">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                            <!-- Approve Modal -->
+                            <div class="modal fade" id="approveModal{{ app.adopt_app_id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-success text-white">
+                                            <h5 class="modal-title">
+                                                <i class="bi bi-check-circle me-2"></i>Approve Application
+                                            </h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form method="POST" action="{{ url_for('render_page', page_name='manage_applications') }}">
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to approve this adoption application?</p>
+                                                <div class="card bg-light border-0 mt-3">
+                                                    <div class="card-body">
+                                                        <p class="mb-1"><strong>Application ID:</strong> #{{ app.adopt_app_id }}</p>
+                                                        <p class="mb-1"><strong>Adopter:</strong> {{ app.adopter_name }}</p>
+                                                        <p class="mb-1"><strong>Pet:</strong> {{ app.pet_name }} ({{ app.pet_type }})</p>
+                                                        <p class="mb-0"><strong>Shelter:</strong> {{ app.shelter_name }}</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mt-3 mb-3">
+                                                    <label for="workerSelect{{ app.adopt_app_id }}" class="form-label">
+                                                        <i class="bi bi-person-badge me-1"></i>Reviewing Worker <span class="text-danger">*</span>
+                                                    </label>
+                                                    <select class="form-select" id="workerSelect{{ app.adopt_app_id }}" name="worker_id" required>
+                                                        <option value="">Select reviewing worker...</option>
+                                                        {% for worker in workers %}
+                                                        <option value="{{ worker.worker_id }}">
+                                                            {{ worker.worker_name }} - {{ worker.shelter_name }}
+                                                        </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                
+                                                <input type="hidden" name="action" value="approve">
+                                                <input type="hidden" name="app_id" value="{{ app.adopt_app_id }}">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="bi bi-check-lg me-1"></i>Approve Application
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reject Modal -->
+                            <div class="modal fade" id="rejectModal{{ app.adopt_app_id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title">
+                                                <i class="bi bi-x-circle me-2"></i>Reject Application
+                                            </h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form method="POST" action="{{ url_for('render_page', page_name='manage_applications') }}">
+                                            <div class="modal-body">
+                                                <p>Please provide a reason for rejecting this application:</p>
+                                                <div class="card bg-light border-0 mt-3 mb-3">
+                                                    <div class="card-body">
+                                                        <p class="mb-1"><strong>Application ID:</strong> #{{ app.adopt_app_id }}</p>
+                                                        <p class="mb-1"><strong>Adopter:</strong> {{ app.adopter_name }}</p>
+                                                        <p class="mb-0"><strong>Pet:</strong> {{ app.pet_name }}</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label for="workerSelectReject{{ app.adopt_app_id }}" class="form-label">
+                                                        <i class="bi bi-person-badge me-1"></i>Reviewing Worker <span class="text-danger">*</span>
+                                                    </label>
+                                                    <select class="form-select" id="workerSelectReject{{ app.adopt_app_id }}" name="worker_id" required>
+                                                        <option value="">Select reviewing worker...</option>
+                                                        {% for worker in workers %}
+                                                        <option value="{{ worker.worker_id }}">
+                                                            {{ worker.worker_name }} - {{ worker.shelter_name }}
+                                                        </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label for="rejectReason{{ app.adopt_app_id }}" class="form-label">
+                                                        Rejection Reason <span class="text-danger">*</span>
+                                                    </label>
+                                                    <textarea name="reject_reason" id="rejectReason{{ app.adopt_app_id }}" class="form-control" rows="3" required 
+                                                              placeholder="Enter rejection reason..."></textarea>
+                                                </div>
+                                                <input type="hidden" name="action" value="reject">
+                                                <input type="hidden" name="app_id" value="{{ app.adopt_app_id }}">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="bi bi-x-lg me-1"></i>Reject Application
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    No applications found
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    {% if applications %}
+    <div class="row mt-4 g-3">
+        <div class="col-md-4">
+            <div class="card border-0 bg-warning bg-opacity-10 h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-clock-fill text-warning fs-3"></i>
+                    <h4 class="mt-2 mb-0 text-warning">
+                        {{ applications | selectattr('status', 'equalto', 'Pending') | list | length }}
+                    </h4>
+                    <small class="text-muted">Pending</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 bg-success bg-opacity-10 h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle-fill text-success fs-3"></i>
+                    <h4 class="mt-2 mb-0 text-success">
+                        {{ applications | selectattr('status', 'equalto', 'Approved') | list | length }}
+                    </h4>
+                    <small class="text-muted">Approved</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 bg-danger bg-opacity-10 h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-x-circle-fill text-danger fs-3"></i>
+                    <h4 class="mt-2 mb-0 text-danger">
+                        {{ applications | selectattr('status', 'equalto', 'Denied') | list | length }}
+                    </h4>
+                    <small class="text-muted">Denied</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
