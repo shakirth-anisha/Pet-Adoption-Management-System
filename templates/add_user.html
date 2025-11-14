@@ -2,7 +2,9 @@
 
 {% block content %}
 <div class="container py-5">
-    <h1 class="text-center mt-4 mb-5 text-secondary display-4 fw-light">Register a New User</h1>
+    <h1 class="text-center mt-4 mb-5 text-secondary display-4 fw-light">
+        {% if is_registration %}Register New Account{% else %}Register a New User{% endif %}
+    </h1>
 
     {% if message %}
     <div class="alert alert-{{ alert_class }} alert-dismissible fade show shadow-sm" role="alert">
@@ -35,6 +37,12 @@
                                     <label for="userPhone" class="form-label fw-bold">Phone Number</label>
                                     <input type="tel" id="userPhone" name="phone" class="form-control form-control-lg" placeholder="Enter phone number">
                                 </div>
+                                {% if is_registration %}
+                                <div class="col-md-6">
+                                    <label for="userPassword" class="form-label fw-bold">Password</label>
+                                    <input type="password" id="userPassword" name="password" class="form-control form-control-lg" placeholder="Enter password" required>
+                                </div>
+                                {% else %}
                                 <div class="col-md-6">
                                     <label for="userRole" class="form-label fw-bold">User Role</label>
                                     <select id="userRole" name="role" class="form-select form-select-lg" required>
@@ -42,16 +50,24 @@
                                         <option value="general">General</option>
                                         <option value="adopter">Adopter</option>
                                         <option value="shelter_worker">Shelter Worker</option>
+                                        <option value="admin">Admin</option>
                                     </select>
                                 </div>
+                                {% endif %}
                             </div>
                         </fieldset>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3">
                             <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">
-                                <i class="bi bi-person-plus-fill me-2"></i> Register User
+                                <i class="bi bi-person-plus-fill me-2"></i> 
+                                {% if is_registration %}Register{% else %}Register User{% endif %}
                             </button>
                         </div>
+                        {% if is_registration %}
+                        <div class="text-center mt-3">
+                            <p class="text-muted">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+                        </div>
+                        {% endif %}
                     </form>
                 </div>
             </div>

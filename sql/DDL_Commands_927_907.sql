@@ -106,6 +106,19 @@ CREATE TABLE Review (
     FOREIGN KEY (pet_id) REFERENCES Pet(pet_id) ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS WorkerRequest (
+    request_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    message TEXT,
+    requested_role ENUM('shelter_worker', 'admin') DEFAULT 'shelter_worker',
+    status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,
+    INDEX idx_status (status),
+    INDEX idx_user_id (user_id)
+);
+
 -- ================== VIEWS ==================
 CREATE VIEW AvailablePets AS
 SELECT 
@@ -206,7 +219,6 @@ VALUES
 ('PayPal', 800.00, 'Completed', 8, 3),         -- Taylor’s payment completed for Coco
 ('Debit Card', 950.00, 'Failed', 9, 5),         -- Taylor’s payment completed for Coco
 ('Credit Card', 950.00, 'Completed', 9, 5);         -- Taylor’s payment completed for Coco
-
 
 -- ==========================================
 

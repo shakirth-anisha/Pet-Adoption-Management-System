@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center mt-4 mb-4 text-secondary">View Role Upgrade Applications</h1>
+
+{% if message %}
+<div class="alert alert-{{ alert_class }} text-center mt-4">{{ message }}</div>
+{% endif %}
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for req in requests %}
+    <div class="col">
+        <div class="card bg-card hover-card h-100 shadow">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-center text-secondary">Request #{{ req.request_id }}</h5>
+
+                <ul class="list-unstyled flex-grow-1 mb-3">
+                    <li><strong>User:</strong> {{ req.user_name }}</li>
+                    <li class="mt-2"><strong>Email:</strong> {{ req.email }}</li>
+                    <li class="mt-2">
+                        <strong>Current Role:</strong> 
+                        <span class="badge bg-info">{{ req.current_role|title }}</span>
+                    </li>
+                    <li class="mt-2">
+                        <strong>Requested Role:</strong> 
+                        <span class="badge bg-primary">
+                            {% if req.requested_role == 'shelter_worker' %}Shelter Worker{% else %}Admin{% endif %}
+                        </span>
+                    </li>
+                </ul>
+                
+                <p class="mb-2">
+                    <strong>Status:</strong>
+                    {% if req.status == 'Pending' %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif req.status == 'Approved' %}
+                        <span class="badge bg-success">Approved</span>
+                    {% elif req.status == 'Rejected' %}
+                        <span class="badge bg-danger">Rejected</span>
+                    {% endif %}
+                </p>
+
+                <p class="small text-muted mb-3">
+                    <strong>Message:</strong> {{ req.message or "N/A" }}
+                </p>
+                
+                <p class="small text-muted mb-3">
+                    <strong>Requested:</strong> {{ req.created_at.strftime('%Y-%m-%d %H:%M') if req.created_at else "—" }}
+                </p>
+                
+                <hr class="text-secondary my-2">
+
+                <div class="mt-auto pt-2">
+                    {% if req.status == 'Pending' %}
+                    <h6 class="small text-secondary mb-2">Take Action</h6>
+                    
+                    <!-- APPROVE FORM -->
+                    <form method="POST" class="mb-3 border-bottom pb-3">
+                        <input type="hidden" name="action" value="approve">
+                        <input type="hidden" name="request_id" value="{{ req.request_id }}">
+                        <input type="hidden" name="user_id" value="{{ req.user_id }}">
+                        <button class="btn btn-success btn-sm w-100">Approve Request</button>
+                    </form>
+
+                    <!-- REJECT FORM -->
+                    <form method="POST">
+                        <input type="hidden" name="action" value="reject">
+                        <input type="hidden" name="request_id" value="{{ req.request_id }}">
+                        <button class="btn btn-danger btn-sm w-100">Reject Request</button>
+                    </form>
+
+                    {% else %}
+                    <p class="text-muted small fst-italic mt-2 mb-3">No further actions available for {{ req.status }}.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    {% if not requests %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            No pending role upgrade requests at this time.
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
