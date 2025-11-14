@@ -6,6 +6,7 @@ from pages import (
 )
 
 app = Flask(__name__)
+app.secret_key = 'your-secret-key-here-change-in-production'
 
 nav_options = {
     "Dashboard": "dashboard",
@@ -26,7 +27,7 @@ page_registry = {
     "add_user": (add_user.handle_add_user, "add_user.html"),
     "view_pets": (view_pets.handle_view_pets, "view_pets.html"),
     "add_application": (add_application.get_add_application_data, "add_application.html"),
-    "manage_applications": (manage_applications.get_manage_applications_data, "manage_applications.html"),
+    "manage_applications": (manage_applications.handle_manage_applications, "manage_applications.html"),
     "manage_payments": (manage_payments.handle_manage_payments, "manage_payments.html"),
     "register_pet": (register_pet.handle_register_pet, "register_pet.html"),
     "manage_pets": (manage_pets.handle_manage_pets, "manage_pets.html"),
@@ -46,6 +47,21 @@ def render_page(page_name):
 
     if page_name in page_registry:
         handler, template_name = page_registry[page_name]
+        
+        # Handle POST requests for manage_applications
+        if page_name == "manage_applications" and request.method == "POST":
+            action = request.form.get("action")
+            app_id = request.form.get("app_id")
+            worker_id = request.form.get("worker_id")
+            
+            if action == "approve" and app_id and worker_id:
+                manage_applications.approve_application(app_id, worker_id)
+            elif action == "reject" and app_id:
+                reason = request.form.get("reason", "No reason provided")
+                manage_applications.reject_application(app_id, reason)
+            
+            return redirect(url_for("render_page", page_name="manage_applications", status=request.args.get('status', 'all')))
+        
         try:
             data = handler(request)
         except TypeError:
