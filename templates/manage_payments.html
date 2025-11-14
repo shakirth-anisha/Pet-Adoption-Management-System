@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center mt-4 mb-4 text-secondary">Manage Payments</h1>
+
+{% if message %}
+<div class="alert alert-{{ alert_class }} text-center mt-4">{{ message }}</div>
+{% endif %}
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for p in payments %}
+    <div class="col">
+        <div class="card bg-card hover-card h-100 shadow">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-center text-secondary">Payment ID: {{ p.pay_id }}</h5>
+
+                <ul class="list-unstyled flex-grow-1">
+                    <li>User: {{ p.user_name }}</li>
+                    <li>Amount: ₹{{ p.amount }}</li>
+                    <li>Date: {{ p.date }}</li>
+                </ul>
+
+                <hr class="text-secondary my-2">
+
+                <p class="mb-2">
+                    Method: {{ p.method }}<br>
+                    Status: {% if p.status == "Completed" %}
+                        <span class="badge bg-success">{{ p.status }}</span>
+                    {% elif p.status == "Failed" or p.status == "Refunded" %}
+                        <span class="badge bg-danger">{{ p.status }}</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">{{ p.status }}</span>
+                    {% endif %}
+                </p>
+
+                <hr class="text-secondary my-2">
+
+                <div class="mt-auto pt-2">
+                    
+                    {% if p.status != "Completed" and p.status != "Refunded" %}
+                        
+                        <h6 class="small mb-1">Update Status</h6>
+                        <form method="POST" class="mt-2 mb-3">
+                            <input type="hidden" name="pay_id" value="{{ p.pay_id }}">
+                            <div class="input-group input-group-sm">
+                                <select name="new_status" class="form-select form-select-sm">
+                                    <option value="Pending" {% if p.status=="Pending" %}selected{% endif %}>Pending</option>
+                                    <option value="Completed" {% if p.status=="Completed" %}selected{% endif %}>Completed</option>
+                                    <option value="Failed" {% if p.status=="Failed" %}selected{% endif %}>Failed</option>
+                                    <option value="Refunded" {% if p.status=="Refunded" %}selected{% endif %}>Refunded</option>
+                                </select>
+                                <button type="submit" name="action" value="update_status" class="btn btn-sm btn-primary">Update</button>
+                            </div>
+                        </form>
+                        
+                        <hr class="text-secondary my-2">
+
+                        <h6 class="small mb-1">Update Method</h6>
+                        <form method="POST" class="mt-2 mb-3">
+                            <input type="hidden" name="pay_id" value="{{ p.pay_id }}">
+                            <input type="hidden" name="action" value="update_method"> 
+                            <div class="input-group input-group-sm">
+                                <select name="new_method" class="form-select form-select-sm">
+                                    <option value="Credit Card" {% if p.method=="Credit Card" %}selected{% endif %}>Credit Card</option>
+                                    <option value="Debit Card" {% if p.method=="Debit Card" %}selected{% endif %}>Debit Card</option>
+                                    <option value="UPI" {% if p.method=="UPI" %}selected{% endif %}>UPI</option>
+                                    <option value="PayPal" {% if p.method=="PayPal" %}selected{% endif %}>PayPal</option>
+                                    <option value="Cash" {% if p.method=="Cash" %}selected{% endif %}>Cash</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-secondary">Update</button>
+                            </div>
+                        </form>
+                        
+                    {% else %}
+                        <p class="text-success small fst-italic mt-2 mb-3">Payment details are final and cannot be changed.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
