@@ -1,18 +1,14 @@
-/* Color Palette */
 .bg-main {
-    background-color: #1e202c !important;
+    background-color: #f8f9fa !important; 
 }
 
 .bg-sidebar {
-    background-color: #31323c !important;
-}
-
-.bg-card {
-    background-color: #60519b !important;
+    background-color: #ffffff !important; 
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05); 
 }
 
 .text-secondary {
-    color: #bfc0d1 !important;
+    color: #6c757d !important; 
 }
 
 /* Sidebar */
@@ -23,13 +19,14 @@
 .nav-link {
     padding: 0.75rem 1rem;
     transition: all 0.2s ease;
+    color: #343a40 !important; 
 }
 
 .nav-link.active {
-    background-color: #bfc0d1 !important;
-    color: #1e202c !important;
+    background-color: #007bff !important;
+    color: #ffffff !important;
     font-weight: bold;
-    box-shadow: 0 0 10px rgba(191,192,209,0.5);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
 }
 
 /* Cards */
@@ -38,22 +35,14 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.hover-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-}
-
-/* Main content spacing */
 .content-area {
     min-height: 100vh;
 }
 
-/* Typography */
 h1, h2, h3, h4, h5 {
-    color: #bfc0d1;
+    color: #343a40;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
@@ -63,25 +52,23 @@ h1, h2, h3, h4, h5 {
     }
 }
 
-/* Dark theme card */
 .bg-card {
-    background-color: #31323c;
-    color: #bfc0d1;
+    background-color: #ffffff; 
+    color: #343a40; 
     border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
 }
 
-/* Card hover effect */
 .hover-card:hover {
     transform: translateY(-5px);
     transition: all 0.3s ease;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); 
 }
 
-/* Card text smaller */
 .card-title {
     font-size: 1rem;
 }
 
-/* Reduce chart spacing */
 canvas {
     max-width: 100%;
 }

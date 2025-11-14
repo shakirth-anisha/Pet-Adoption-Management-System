@@ -9,10 +9,6 @@
             <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
                 {{ message }}
-                <hr>
-                <a href="{{ url_for('render_page', page_name='manage_applications') }}" class="btn btn-sm btn-outline-success">
-                    View All Applications
-                </a>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% else %}
@@ -33,6 +29,7 @@
                             <legend class="float-none w-auto px-2 fs-5 text-primary">Application Details</legend>
                             
                             <div class="row g-3">
+                                {% if show_user_dropdown %}
                                 <div class="col-md-6">
                                     <label for="user_id" class="form-label fw-bold">Select Adopter</label>
                                     <select name="user_id" id="user_id" class="form-select form-select-lg" required>
@@ -42,17 +39,28 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-
                                 <div class="col-md-6">
+                                {% else %}
+                                <div class="col-12">
+                                {% endif %}
                                     <label for="pet_id" class="form-label fw-bold">Select Pet</label>
                                     <select name="pet_id" id="pet_id" class="form-select form-select-lg" required>
                                         <option value="" disabled selected>Choose a pet</option>
                                         {% for pet in pets %}
-                                        <option value="{{ pet.pet_id }}">{{ pet.name }}</option>
+                                        <option value="{{ pet.pet_id }}" 
+                                            {% if pet.status == 'Adopted' %}style="color: #dc3545;"{% elif pet.status == 'Available' %}style="color: #28a745;"{% endif %}>
+                                            {{ pet.name }} 
+                                            {% if pet.status == 'Adopted' %}(Already Adopted - Trigger will prevent application){% elif pet.status == 'Available' %}(Available){% elif pet.status == 'Medical Hold' %}(Medical Hold){% else %}({{ pet.status }}){% endif %}
+                                        </option>
                                         {% endfor %}
                                     </select>
                                     {% if not pets %}
-                                        <div class="form-text text-warning"><i class="bi bi-exclamation-circle me-1"></i>No pets are currently available for adoption.</div>
+                                        <div class="form-text text-warning"><i class="bi bi-exclamation-circle me-1"></i>No pets found in the system.</div>
+                                    {% else %}
+                                        <div class="form-text text-info">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            <strong>Note:</strong> If you try to apply for an already adopted pet, the database trigger will prevent the submission and show an error message.
+                                        </div>
                                     {% endif %}
                                 </div>
                             </div>

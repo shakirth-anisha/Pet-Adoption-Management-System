@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mt-4 mb-5 text-secondary display-4 fw-light">Request Role Upgrade</h1>
+
+    {% if message %}
+    <div class="alert alert-{{ alert_class }} alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        Status: {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    {% if has_pending or already_upgraded %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5 text-center">
+                    {% if has_pending %}
+                    <h3 class="mb-4">Request Already Submitted</h3>
+                    <p class="text-muted">{{ message }}</p>
+                    {% elif already_upgraded %}
+                    <h3 class="mb-4">Already Upgraded</h3>
+                    <p class="text-muted">{{ message }}</p>
+                    {% endif %}
+                    <a href="{{ url_for('render_page', page_name='dashboard') }}" class="btn btn-primary mt-3">Go to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <p class="text-muted mb-4">
+                        Submit a request to upgrade your account role. 
+                        An administrator will review your request.
+                    </p>
+                    
+                    <form method="POST">
+                        <div class="mb-4">
+                            <label for="requested_role" class="form-label fw-bold">Request Role</label>
+                            <select id="requested_role" name="requested_role" class="form-select" required>
+                                {% if current_role not in ['shelter_worker', 'admin'] %}
+                                <option value="shelter_worker">
+                                    Shelter Worker - Manage pets, applications, and payments
+                                </option>
+                                {% endif %}
+                                <option value="admin" {% if current_role == 'admin' %}disabled{% endif %}>
+                                    Admin - Full system access and user management
+                                </option>
+                            </select>
+                            {% if current_role == 'shelter_worker' %}
+                            <div class="form-text text-info">You can request to become an Admin.</div>
+                            {% elif current_role in ['general', 'adopter'] %}
+                            <div class="form-text text-muted">You can request to become a Shelter Worker or Admin.</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="message" class="form-label fw-bold">Message (Optional)</label>
+                            <textarea id="message" name="message" class="form-control" rows="4" 
+                                placeholder="Tell us why you want this role upgrade..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3">
+                            <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">
+                                <i class="bi bi-send-fill me-2"></i> Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {# Removed the section showing rejected_requests #}
+    
+    {# Removed the section showing approved_requests #}
+</div>
+{% endblock %}

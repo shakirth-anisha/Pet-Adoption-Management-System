@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center mt-4 mb-4 text-secondary">Manage My Applications</h1>
+
+{% if message %}
+<div class="alert alert-{{ alert_class }} text-center mt-4">{{ message }}</div>
+{% endif %}
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for app in applications %}
+    <div class="col">
+        <div class="card bg-card hover-card h-100 shadow">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-center text-secondary">Application #{{ app.adopt_app_id }}</h5>
+
+                <ul class="list-unstyled flex-grow-1 mb-3">
+                    <li><strong>Pet:</strong> {{ app.pet_name }}</li>
+                    <li class="mt-2"><strong>Species:</strong> {{ app.species }}</li>
+                    <li class="mt-2"><strong>Breed:</strong> {{ app.breed or "N/A" }}</li>
+                    <li class="mt-2"><strong>Shelter:</strong> {{ app.shelter_name }}</li>
+                    <li class="mt-2">
+                        <strong>Pet Status:</strong> 
+                        <span class="badge bg-info">{{ app.pet_status }}</span>
+                    </li>
+                </ul>
+                
+                <p class="mb-2">
+                    <strong>Status:</strong>
+                    {% if app.status == 'Pending' %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif app.status == 'Approved' %}
+                        <span class="badge bg-success">Approved</span>
+                    {% elif app.status == 'Denied' %}
+                        <span class="badge bg-danger">Denied</span>
+                    {% elif app.status == 'Withdrawn' %}
+                        <span class="badge bg-secondary">Withdrawn</span>
+                    {% endif %}
+                </p>
+
+                <p class="small text-muted mb-2">
+                    <strong>Reason:</strong> {{ app.reason or "N/A" }}
+                </p>
+                
+                <p class="small text-muted mb-2">
+                    <strong>Applied:</strong> {{ app.date.strftime('%Y-%m-%d') if app.date else "—" }}
+                </p>
+                
+                {% if app.total_amount %}
+                <p class="small text-muted mb-3">
+                    <strong>Total Amount:</strong> ₹{{ "%.2f"|format(app.total_amount) }}
+                    <br>
+                    <strong>Completed Payments:</strong> {{ app.completed_payments or 0 }}
+                </p>
+                {% endif %}
+                
+                <hr class="text-secondary my-2">
+
+                <div class="mt-auto pt-2">
+                    {% if app.status == 'Pending' %}
+                    <form method="POST">
+                        <input type="hidden" name="action" value="withdraw">
+                        <input type="hidden" name="app_id" value="{{ app.adopt_app_id }}">
+                        <button class="btn btn-warning btn-sm w-100" onclick="return confirm('Are you sure you want to withdraw this application?');">
+                            Withdraw Application
+                        </button>
+                    </form>
+                    {% else %}
+                    <p class="text-muted small fst-italic mt-2 mb-3">No further actions available for {{ app.status }} applications.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    {% if not applications %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            You haven't submitted any adoption applications yet.
+            <a href="{{ url_for('render_page', page_name='add_application') }}" class="alert-link">Submit one now</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
