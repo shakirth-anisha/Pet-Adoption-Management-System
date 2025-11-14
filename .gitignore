@@ -9,6 +9,7 @@ venv/
 # VS Code
 .vscode/
 Reports/Req.md
+Reports/Miniproject_Guidelines.pdf
 
 # macOS
 .DS_Store

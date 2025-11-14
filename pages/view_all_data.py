@@ -24,9 +24,9 @@ def handle_view_all_data(request):
         adoption_summary = run_query("SELECT * FROM AdoptionSummary", fetch=True)
         shelters = run_query("SELECT shelter_id, name, location, contact FROM Shelter", fetch=True)
         pet_types = run_query("SELECT type_id, species, breed, life_span FROM PetType", fetch=True)
-        popular_pets = run_query(nested_sql, fetch=True) # Fetch results from the new query
+        popular_pets = run_query(nested_sql, fetch=True)
         if user_role == 'admin':
-            worker_mapping_sql = """
+            correlated_query_sql = """
                 SELECT 
                     u.user_id,
                     u.email,
@@ -44,7 +44,7 @@ def handle_view_all_data(request):
                 )
                 ORDER BY u.user_id
             """
-            worker_mappings = run_query(worker_mapping_sql, fetch=True) or []
+            worker_mappings = run_query(correlated_query_sql, fetch=True) or []
 
     except Exception as e:
         print(f"Database Error fetching view data: {e}")
@@ -60,7 +60,7 @@ def handle_view_all_data(request):
         "adoption_summary": adoption_summary,
         "shelters": shelters,
         "pet_types": pet_types,
-        "popular_pets": popular_pets, # Include the new data set
+        "popular_pets": popular_pets,
         "worker_mappings": worker_mappings,
         "error_message": None
     }

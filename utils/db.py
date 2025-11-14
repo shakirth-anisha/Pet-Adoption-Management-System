@@ -6,6 +6,12 @@ import os
 load_dotenv()
 
 LOG_FILE = "db_log.txt"
+SQL_ROLE_MAP = {
+    'admin': 'admin_role',
+    'shelter_worker': 'shelter_worker_role',
+    'adopter': 'adopter_role',
+    'general': 'general_role'
+}
 
 def log_message(message):
     """Append timestamped messages to the log file."""
@@ -22,11 +28,21 @@ def get_connection():
         cursorclass=pymysql.cursors.DictCursor
     )
 
-def run_query(query, params=None, fetch=False):
+def get_sql_role(app_role):
+    """Map application role to SQL role name."""
+    return SQL_ROLE_MAP.get(app_role)
+
+def _set_sql_role(cursor, sql_role):
+    """Apply SQL role for current connection if provided."""
+    if sql_role:
+        cursor.execute(f"SET ROLE '{sql_role}'")
+
+def run_query(query, params=None, fetch=False, sql_role=None):
     """Execute SQL query. Return fetched data if fetch=True."""
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
+            _set_sql_role(cursor, sql_role)
             cursor.execute(query, params or ())
             data = cursor.fetchall() if fetch else None
         conn.commit()
@@ -34,11 +50,12 @@ def run_query(query, params=None, fetch=False):
     finally:
         conn.close()
 
-def run_procedure(proc_name, params=None, fetch=True):
+def run_procedure(proc_name, params=None, fetch=True, sql_role=None):
     """Call a stored procedure. Raises exceptions for caller to handle."""
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
+            _set_sql_role(cursor, sql_role)
             cursor.callproc(proc_name, params or ())
             data = cursor.fetchall() if fetch else None
         conn.commit()

@@ -2,11 +2,6 @@ from utils.db import run_query
 from flask import session
 
 def handle_request_worker_role(request):
-    """
-    Handles the logic for users requesting a role upgrade (Shelter Worker or Admin).
-    Checks current role, pending requests, and handles form submission.
-    Removed logic for fetching request history.
-    """
     message = None
     alert_class = "info"
     user_id = session.get('user_id')

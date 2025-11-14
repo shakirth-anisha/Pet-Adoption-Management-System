@@ -8,7 +8,7 @@ def get_add_application_data(request=None):
     current_user_id = session.get('user_id')
     
     if user_role in ['admin', 'shelter_worker']:
-        users = run_query("SELECT user_id, name FROM User WHERE role='adopter' OR role='general';", fetch=True)
+        users = run_query("SELECT user_id, name FROM User;", fetch=True)
         data["users"] = users or []
         data["show_user_dropdown"] = True
     else:

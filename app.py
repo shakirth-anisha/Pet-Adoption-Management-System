@@ -14,7 +14,7 @@ app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-change-in-production')
 # Role-based page access permissions
 ROLE_PERMISSIONS = {
     'admin': [
-        'dashboard', 'add_user', 'register_pet', 'add_application', 'view_pets',
+        'dashboard', 'register_pet', 'add_application', 'view_pets',
         'manage_pets', 'manage_applications', 'manage_payments', 'view_all_data',
         'test_procedural_extensions', 'manage_users', 'view_worker_applications',
         'manage_my_applications', 'request_worker_role'
@@ -25,11 +25,11 @@ ROLE_PERMISSIONS = {
         'request_worker_role'
     ],
     'general': [
-        'dashboard', 'add_application', 'view_pets', 'manage_my_applications',
+        'dashboard', 'add_application', 'view_pets',
         'request_worker_role'
     ],
     'adopter': [
-        'dashboard', 'add_application', 'view_pets', 'manage_my_applications',
+        'dashboard', 'add_application', 'view_pets',
         'request_worker_role'
     ]
 }
@@ -44,7 +44,6 @@ def get_nav_options_for_role(role):
     if role == 'admin':
         return {
             **base_nav,
-            "Register User": "add_user",
             "Register Pet": "register_pet",
             "Add Adoption Application": "add_application",
             "View Pets": "view_pets",
@@ -75,7 +74,6 @@ def get_nav_options_for_role(role):
             **base_nav,
             "Add Adoption Application": "add_application",
             "View Pets": "view_pets",
-            "Manage My Applications": "manage_my_applications",
             "Request Role Upgrade": "request_worker_role"
         }
     elif role == 'adopter':
@@ -83,7 +81,6 @@ def get_nav_options_for_role(role):
             **base_nav,
             "Add Adoption Application": "add_application",
             "View Pets": "view_pets",
-            "Manage My Applications": "manage_my_applications",
             "Request Role Upgrade": "request_worker_role"
         }
     return base_nav
