@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        /* Changed color: #f8f9fa (white) to #ced4da (light gray) for general text */
+        .bg-card {
+            background-color: #2c3034;
+            border: 1px solid #495057;
+            color: #ced4da;
+            transition: all 0.3s;
+        }
+        .hover-card:hover {
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        .text-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #17a2b8;
+        }
+        .table-dark th, .table-dark td {
+            border-color: #495057;
+        }
+        .small-note { font-size: .9rem; color: #adb5bd; }
+        .badge-muted { background: #495057; color: #ced4da; }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h1 class="text-center mt-4 mb-4 text-info">Test Procedural Extentions</h1>
+
+    {% if message %}
+    <div class="alert alert-{{ alert_class }}" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        <strong>Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card bg-card p-3 h-100">
+                <h4 class="card-title text-info border-bottom pb-2 mb-3">Recent Trigger Logs (`PetStatusLog`)</h4>
+                <div class="table-responsive">
+                    {% if trigger_logs %}
+                    <table class="table table-dark table-striped table-hover small mb-0">
+                        <thead>
+                            <tr>
+                                <th>Pet ID</th><th>Old Status</th><th>New Status</th><th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in trigger_logs %}
+                            <tr>
+                                <td>{{ log.pet_id }}</td>
+                                <td><span class="badge bg-warning">{{ log.old_status }}</span></td>
+                                <td><span class="badge bg-success">{{ log.new_status }}</span></td>
+                                <td>{{ log.changed_at }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-muted">No trigger logs available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card bg-card p-3 h-100">
+                <h4 class="card-title text-info border-bottom pb-2 mb-3">Defined Triggers</h4>
+                <ul class="list-group list-group-flush">
+                    {% for t in all_triggers %}
+                    <li class="list-group-item bg-card">
+                        <strong>{{ t.name }}</strong>
+                        <div class="small-note">Table: {{ t.table }} &middot; {{ t.event }}</div>
+                        <div class="small-note">{{ t.description }}</div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4 border-secondary">
+
+    <div class="row g-4 mb-4">
+        
+        <div class="col-md-6">
+            <div class="card bg-card p-3 hover-card">
+                <h6 class="text-primary">UpdatePaymentStatus</h6>
+                <form method="POST" class="row g-2">
+                    <input type="hidden" name="action" value="UpdatePaymentStatus">
+                    <div class="col-6"><input type="number" name="pay_id" class="form-control form-control-sm" placeholder="Payment ID" required></div>
+                    <div class="col-4">
+                        <select name="pay_status" class="form-select form-select-sm">
+                            <option>Completed</option><option>Pending</option><option>Failed</option><option>Refunded</option>
+                        </select>
+                    </div>
+                    <div class="col-2"><button class="btn btn-outline-warning btn-sm w-100">Run</button></div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card bg-card p-3 h-100">
+                <h6 class="text-primary">Other Actions Removed</h6>
+                <p class="text-muted small-note">RegisterPet, Adoption Application actions, and AddUser forms exist in other tabs.</p>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card bg-card p-3">
+                <h6 class="text-info">Read-only: GetAdoptedPetsByUsers & Functions</h6>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <form method="POST" class="d-flex">
+                            <input type="hidden" name="action" value="GetAdoptedPetsByUsers">
+                            <button class="btn btn-outline-info btn-sm me-2">Run GetAdoptedPetsByUsers</button>
+                            <span class="small-note align-self-center">Shows approved adoptions (User ↔ Pet).</span>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <form method="POST" class="d-flex">
+                            <input type="hidden" name="action" value="FunctionsSummary">
+                            <input type="number" name="shelter_id" class="form-control form-control-sm me-2" placeholder="Shelter ID" value="1">
+                            <input type="number" name="user_id" class="form-control form-control-sm me-2" placeholder="User ID" value="1">
+                            <button class="btn btn-outline-warning btn-sm">Run Functions</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="text-info mb-3">Database State Comparison</h4>
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card bg-card p-3">
+                <h5 class="text-info">Before Execution</h5>
+                <div class="accordion" id="beforeAccordion">
+                    {% for table, rows in before.items() %}
+                    <div class="accordion-item bg-card">
+                        <h2 class="accordion-header" id="beforeHeading{{ loop.index }}">
+                            <button class="accordion-button collapsed bg-card" style="color:#ced4da;" type="button" data-bs-toggle="collapse" data-bs-target="#beforeCollapse{{ loop.index }}">
+                                {{ table }} ({{ rows|length }} rows)
+                            </button>
+                        </h2>
+                        <div id="beforeCollapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#beforeAccordion">
+                            <div class="accordion-body">
+                                {% if rows %}
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-striped table-hover small mb-0">
+                                        <thead>
+                                            <tr>
+                                                {% for key in rows[0].keys() %}
+                                                <th>{{ key }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in rows %}
+                                            <tr>
+                                                {% for val in row.values() %}
+                                                <td>{{ val }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <p class="text-muted mb-0">No rows.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card bg-card p-3">
+                <h5 class="text-info">After Execution</h5>
+                <div class="accordion" id="afterAccordion">
+                    {% for table, rows in after.items() %}
+                    <div class="accordion-item bg-card">
+                        <h2 class="accordion-header" id="afterHeading{{ loop.index }}">
+                            <button class="accordion-button collapsed bg-card" style="color:#ced4da;" type="button" data-bs-toggle="collapse" data-bs-target="#afterCollapse{{ loop.index }}">
+                                {{ table }} ({{ rows|length }} rows)
+                            </button>
+                        </h2>
+                        <div id="afterCollapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#afterAccordion">
+                            <div class="accordion-body">
+                                {% if rows %}
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-striped table-hover small mb-0">
+                                        <thead>
+                                            <tr>
+                                                {% for key in rows[0].keys() %}
+                                                <th>{{ key }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in rows %}
+                                            <tr>
+                                                {% for val in row.values() %}
+                                                <td>{{ val }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <p class="text-muted mb-0">No rows.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if procedure_results %}
+    <div class="card bg-card p-3 mb-4">
+        <h5 class="text-info">Procedure Results</h5>
+        {% for proc in procedure_results %}
+            <div class="mt-2">
+                <strong>{{ proc.name }}</strong> — <span class="small-note">{{ proc.description }}</span>
+                {% if proc.output_format == 'Table' %}
+                    <div class="table-responsive mt-2">
+                        <table class="table table-dark table-sm small mb-0">
+                            <thead>
+                                <tr>
+                                    {% for k in proc.output_data[0].keys() %}
+                                    <th>{{ k }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for r in proc.output_data %}
+                                <tr>
+                                    {% for v in r.values() %}
+                                    <td>{{ v }}</td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if function_results %}
+    <div class="card bg-card p-3">
+        <h5 class="text-info">Function Results</h5>
+        <div class="row">
+            {% for f in function_results %}
+            <div class="col-md-4">
+                <div class="p-2">
+                    <div class="small-note">{{ f.name }}</div>
+                    <div class="text-value mt-1">{{ f.output_data }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

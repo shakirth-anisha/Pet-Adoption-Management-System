@@ -28,6 +28,8 @@ CREATE PROCEDURE AddAdoptionApplication (
 )
 BEGIN
     DECLARE v_status VARCHAR(50);
+    DECLARE v_app_id INT;
+
     SELECT p.status INTO v_status
     FROM pet_adoption_db.Pet p
     WHERE p.pet_id = p_pet_id
@@ -37,10 +39,24 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot apply: pet already adopted.';
     END IF;
 
+    -- 1. Insert the new Adoption Application
     INSERT INTO pet_adoption_db.AdoptionApplication (status, reason, approved_by, pet_id, user_id)
     VALUES ('Pending', p_reason, NULL, p_pet_id, p_user_id);
+
+    SET v_app_id = LAST_INSERT_ID();
+
+    -- 2. Insert the initial Payment record
+    INSERT INTO pet_adoption_db.Payment (method, amount, status, user_id, adoption_app_id)
+    VALUES (
+        'Cash',
+        500.00,
+        'Pending',
+        p_user_id,
+        v_app_id
+    );
 END;
 //
+
 
 -- Reject Adoption Application
 CREATE PROCEDURE RejectApplication (
@@ -179,6 +195,27 @@ BEGIN
 END;
 //
 
+-- Update Payment Method
+CREATE PROCEDURE UpdatePaymentMethod (
+    IN p_pay_id INT,
+    IN p_new_method ENUM('Credit Card', 'Debit Card', 'UPI', 'PayPal', 'Cash')
+)
+BEGIN
+    DECLARE v_exists INT;
+    SELECT COUNT(*) INTO v_exists
+    FROM pet_adoption_db.Payment
+    WHERE pay_id = p_pay_id;
+
+    IF v_exists = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Payment ID not found.';
+    END IF;
+
+    UPDATE pet_adoption_db.Payment
+    SET method = p_new_method
+    WHERE pay_id = p_pay_id;
+END;
+//
+
 -- Update Payment Status
 CREATE PROCEDURE UpdatePaymentStatus (
     IN p_pay_id INT,
@@ -306,71 +343,71 @@ CALL RegisterPet('Buddy', 'M', 3, 'Friendly and playful', 'Available', 1, 1);
 SELECT * FROM Pet;
 
 -- AddAdoptionApplication Procedure
--- SELECT * FROM AdoptionApplication;
--- CALL AddAdoptionApplication(9, 7, 'Looking to adopt a friendly dog');
--- SELECT * FROM AdoptionApplication;
+SELECT * FROM AdoptionApplication;
+CALL AddAdoptionApplication(9, 3, 'Looking to adopt a friendly cat');
+SELECT * FROM AdoptionApplication;
 
--- Approve a pending application and auto trigger adoption + reject others
-SELECT * FROM Pet WHERE pet_id = 5;  -- Zoomie
-SELECT * FROM AdoptionApplication WHERE pet_id = 5;
-SELECT * FROM Payment WHERE adoption_app_id IN (SELECT adopt_app_id FROM AdoptionApplication WHERE pet_id = 5);
+-- -- Approve a pending application and auto trigger adoption + reject others
+-- SELECT * FROM Pet WHERE pet_id = 5;  -- Zoomie
+-- SELECT * FROM AdoptionApplication WHERE pet_id = 5;
+-- SELECT * FROM Payment WHERE adoption_app_id IN (SELECT adopt_app_id FROM AdoptionApplication WHERE pet_id = 5);
 
-CALL ApproveApplication(1, 2);
+-- CALL ApproveApplication(1, 2);
 
-SELECT * FROM Pet WHERE pet_id = 5;
-SELECT * FROM AdoptionApplication WHERE pet_id = 5;
-SELECT * FROM Payment WHERE adoption_app_id IN (SELECT adopt_app_id FROM AdoptionApplication WHERE pet_id = 5);
-SELECT * FROM PetStatusLog WHERE pet_id = 5;
-
-
--- AutoRejectOtherApplications Trigger
-INSERT INTO AdoptionApplication (status, reason, pet_id, user_id) VALUES ('Pending', 'Love small cats', 3, 7);
-INSERT INTO AdoptionApplication (status, reason, pet_id, user_id) VALUES ('Pending', 'Perfect for family', 3, 9);
-
-SELECT * FROM AdoptionApplication WHERE pet_id = 3;
-SELECT * FROM Pet WHERE pet_id = 3;
-
-CALL ApproveApplication(4, 5);
-
-SELECT * FROM AdoptionApplication WHERE pet_id = 3;
-SELECT * FROM Pet WHERE pet_id = 3;
-SELECT * FROM PetStatusLog WHERE pet_id = 3;
+-- SELECT * FROM Pet WHERE pet_id = 5;
+-- SELECT * FROM AdoptionApplication WHERE pet_id = 5;
+-- SELECT * FROM Payment WHERE adoption_app_id IN (SELECT adopt_app_id FROM AdoptionApplication WHERE pet_id = 5);
+-- SELECT * FROM PetStatusLog WHERE pet_id = 5;
 
 
--- RejectApplication Procedure
-SELECT * FROM AdoptionApplication WHERE adopt_app_id = 3;
-SELECT * FROM Payment WHERE adoption_app_id = 3;
+-- -- AutoRejectOtherApplications Trigger
+CALL AddAdoptionApplication(7, 3, 'Love small cats');
+CALL AddAdoptionApplication(9, 3, 'Perfect for family');
 
-CALL RejectApplication(3, 'User withdrew application');
+-- SELECT * FROM AdoptionApplication WHERE pet_id = 3;
+-- SELECT * FROM Pet WHERE pet_id = 3;
 
-SELECT * FROM AdoptionApplication WHERE adopt_app_id = 3;
-SELECT * FROM Payment WHERE adoption_app_id = 3;
+-- CALL ApproveApplication(4, 5);
 
-
--- UpdatePaymentStatus Procedure
-SELECT * FROM Payment WHERE pay_id = 2;
-
-CALL UpdatePaymentStatus(2, 'Completed');
-
-SELECT * FROM Payment WHERE pay_id = 2;
+-- SELECT * FROM AdoptionApplication WHERE pet_id = 3;
+-- SELECT * FROM Pet WHERE pet_id = 3;
+-- SELECT * FROM PetStatusLog WHERE pet_id = 3;
 
 
--- Pet Status Log Trigger
-SELECT * FROM PetStatusLog;
-UPDATE Pet SET status = 'Medical Hold' WHERE pet_id = 6;
-SELECT * FROM PetStatusLog;
+-- -- RejectApplication Procedure
+-- SELECT * FROM AdoptionApplication WHERE adopt_app_id = 3;
+-- SELECT * FROM Payment WHERE adoption_app_id = 3;
 
--- GetAdoptedPetsByUsers Procedure
-CALL GetAdoptedPetsByUsers();
+-- CALL RejectApplication(3, 'User withdrew application');
 
--- TESTING FUNCTIONS
--- CountAvailablePets
-SELECT CountAvailablePets(1) AS AvailablePets_In_Shelter1;
+-- SELECT * FROM AdoptionApplication WHERE adopt_app_id = 3;
+-- SELECT * FROM Payment WHERE adoption_app_id = 3;
 
--- TotalAdoptionsByUser
-SELECT TotalAdoptionsByUser(3) AS Total_Adoptions_By_Angad;
 
--- AvgPetAgeInShelter
-SELECT AvgPetAgeInShelter(1) AS Avg_Age_Shelter1;
+-- -- UpdatePaymentStatus Procedure
+-- SELECT * FROM Payment WHERE pay_id = 2;
+
+-- CALL UpdatePaymentStatus(2, 'Completed');
+
+-- SELECT * FROM Payment WHERE pay_id = 2;
+
+
+-- -- Pet Status Log Trigger
+-- SELECT * FROM PetStatusLog;
+-- UPDATE Pet SET status = 'Medical Hold' WHERE pet_id = 6;
+-- SELECT * FROM PetStatusLog;
+
+-- -- GetAdoptedPetsByUsers Procedure
+-- CALL GetAdoptedPetsByUsers();
+
+-- -- TESTING FUNCTIONS
+-- -- CountAvailablePets
+-- SELECT CountAvailablePets(1) AS AvailablePets_In_Shelter1;
+
+-- -- TotalAdoptionsByUser
+-- SELECT TotalAdoptionsByUser(3) AS Total_Adoptions_By_Angad;
+
+-- -- AvgPetAgeInShelter
+-- SELECT AvgPetAgeInShelter(1) AS Avg_Age_Shelter1;
 
 -- ====================== DONE ===============================
