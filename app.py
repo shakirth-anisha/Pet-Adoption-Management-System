@@ -26,7 +26,7 @@ page_registry = {
     "add_user": (add_user.handle_add_user, "add_user.html"),
     "view_pets": (view_pets.handle_view_pets, "view_pets.html"),
     "add_application": (add_application.get_add_application_data, "add_application.html"),
-    "manage_applications": (manage_applications.get_manage_applications_data, "manage_applications.html"),
+    "manage_applications": (manage_applications.handle_manage_applications, "manage_applications.html"),
     "manage_payments": (manage_payments.handle_manage_payments, "manage_payments.html"),
     "register_pet": (register_pet.handle_register_pet, "register_pet.html"),
     "manage_pets": (manage_pets.handle_manage_pets, "manage_pets.html"),
