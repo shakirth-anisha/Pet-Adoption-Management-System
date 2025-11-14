@@ -1,3 +1,4 @@
+from flask import session
 from utils.db import run_query, run_procedure
 
 def handle_manage_applications(request):
@@ -7,10 +8,38 @@ def handle_manage_applications(request):
     if not filter_status or filter_status == 'All':
         filter_status = None
 
+    auto_worker_id = None
+    worker_lookup_notice = None
+
+    user_email = session.get('user_email')
+    if user_email:
+        try:
+            worker_result = run_query(
+                """
+                SELECT sw.worker_id
+                FROM ShelterWorker sw
+                JOIN User u ON sw.user_id = u.user_id
+                WHERE u.email = %s
+                """,
+                (user_email,),
+                fetch=True
+            )
+            if worker_result:
+                auto_worker_id = worker_result[0]['worker_id']
+            else:
+                worker_lookup_notice = (
+                    "No shelter worker profile is linked to your account. "
+                    "Enter a worker ID manually to approve applications."
+                )
+        except Exception as e:
+            worker_lookup_notice = f"Unable to automatically fetch your worker ID: {e}"
+    else:
+        worker_lookup_notice = "User email not available in session; cannot auto-fill worker ID."
+
     if request.method == "POST":
         action = request.form.get("action")
         app_id = request.form.get("app_id")
-        worker_id = request.form.get("worker_id")
+        worker_id = request.form.get("worker_id") or auto_worker_id
         reject_reason = request.form.get("reject_reason")
 
         try:
@@ -74,5 +103,7 @@ def handle_manage_applications(request):
         "applications": applications,
         "message": message,
         "alert_class": alert_class,
-        "filter_status": filter_status 
+        "filter_status": filter_status,
+        "auto_worker_id": auto_worker_id,
+        "worker_lookup_notice": worker_lookup_notice
     }

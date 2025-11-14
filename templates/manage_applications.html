@@ -69,10 +69,22 @@
                         <input type="hidden" name="app_id" value="{{ app.adopt_app_id }}">
                         
                         <div class="input-group input-group-sm">
-                            <input type="number" name="worker_id"
-                                placeholder="Worker ID" class="form-control" required>
+                            {% if auto_worker_id %}
+                                <input type="hidden" name="worker_id" value="{{ auto_worker_id }}">
+                                <span class="form-control form-control-sm bg-light fw-semibold">
+                                    Worker ID {{ auto_worker_id }}
+                                </span>
+                            {% else %}
+                                <input type="number" name="worker_id"
+                                    placeholder="Worker ID" class="form-control" required>
+                            {% endif %}
                             <button class="btn btn-success btn-sm">Approve</button>
                         </div>
+                        {% if not auto_worker_id and worker_lookup_notice %}
+                        <small class="text-danger d-block mt-1">{{ worker_lookup_notice }}</small>
+                        {% elif auto_worker_id %}
+                        <small class="text-muted d-block mt-1">Auto-filled from your shelter worker profile.</small>
+                        {% endif %}
                     </form>
 
                     <!-- REJECT FORM -->
