@@ -18,7 +18,6 @@
         .text-value {
             font-size: 2.2rem;
             font-weight: 700;
-            color: #17a2b8;
         }
         .table-dark th, .table-dark td {
             border-color: #495057;
@@ -30,13 +29,8 @@
 
 {% block content %}
 <div class="container-fluid py-4">
-    <h1 class="text-center mt-4 mb-4 text-info">Test Procedural Extentions</h1>
+    <h1 class="text-center mt-4 mb-4 text-secondary">Test Procedural Extentions</h1>
 
-    {% if message %}
-    <div class="alert alert-{{ alert_class }}" role="alert">
-        {{ message }}
-    </div>
-    {% endif %}
     {% if error %}
     <div class="alert alert-danger" role="alert">
         <strong>Error:</strong> {{ error }}
@@ -91,147 +85,55 @@
 
     <hr class="my-4 border-secondary">
 
+    <h4 class="text-info mb-3">Read-only Procedures and Functions</h4>
+    
     <div class="row g-4 mb-4">
         
-        <div class="col-md-6">
+        <div class="col-12">
             <div class="card bg-card p-3 hover-card">
-                <h6 class="text-primary">UpdatePaymentStatus</h6>
-                <form method="POST" class="row g-2">
-                    <input type="hidden" name="action" value="UpdatePaymentStatus">
-                    <div class="col-6"><input type="number" name="pay_id" class="form-control form-control-sm" placeholder="Payment ID" required></div>
-                    <div class="col-4">
-                        <select name="pay_status" class="form-select form-select-sm">
-                            <option>Completed</option><option>Pending</option><option>Failed</option><option>Refunded</option>
-                        </select>
-                    </div>
-                    <div class="col-2"><button class="btn btn-outline-warning btn-sm w-100">Run</button></div>
+                <h6 class="text-primary">GetAdoptedPetsByUsers</h6>
+                <form method="POST" class="d-flex">
+                    <input type="hidden" name="action" value="GetAdoptedPetsByUsers">
+                    <button class="btn btn-outline-info btn-sm me-2">Run GetAdoptedPetsByUsers</button>
+                    <span class="small-note align-self-center">Shows approved adoptions (User ↔ Pet).</span>
                 </form>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card bg-card p-3 h-100">
-                <h6 class="text-primary">Other Actions Removed</h6>
-                <p class="text-muted small-note">RegisterPet, Adoption Application actions, and AddUser forms exist in other tabs.</p>
+        <div class="col-md-4">
+            <div class="card bg-card p-3 hover-card h-100">
+                <h6 class="text-primary">CountAvailablePets(shelter_id)</h6>
+                <form method="POST" class="d-flex">
+                    <input type="hidden" name="action" value="RunCountAvailablePets">
+                    <input type="number" name="shelter_id" class="form-control form-control-sm me-2" placeholder="Shelter ID" value="1" required>
+                    <button class="btn btn-outline-warning btn-sm">Run</button>
+                </form>
             </div>
         </div>
 
-        <div class="col-12">
-            <div class="card bg-card p-3">
-                <h6 class="text-info">Read-only: GetAdoptedPetsByUsers & Functions</h6>
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <form method="POST" class="d-flex">
-                            <input type="hidden" name="action" value="GetAdoptedPetsByUsers">
-                            <button class="btn btn-outline-info btn-sm me-2">Run GetAdoptedPetsByUsers</button>
-                            <span class="small-note align-self-center">Shows approved adoptions (User ↔ Pet).</span>
-                        </form>
-                    </div>
-                    <div class="col-md-6">
-                        <form method="POST" class="d-flex">
-                            <input type="hidden" name="action" value="FunctionsSummary">
-                            <input type="number" name="shelter_id" class="form-control form-control-sm me-2" placeholder="Shelter ID" value="1">
-                            <input type="number" name="user_id" class="form-control form-control-sm me-2" placeholder="User ID" value="1">
-                            <button class="btn btn-outline-warning btn-sm">Run Functions</button>
-                        </form>
-                    </div>
-                </div>
+        <div class="col-md-4">
+            <div class="card bg-card p-3 hover-card h-100">
+                <h6 class="text-primary">TotalAdoptionsByUser(user_id)</h6>
+                <form method="POST" class="d-flex">
+                    <input type="hidden" name="action" value="RunTotalAdoptionsByUser">
+                    <input type="number" name="user_id" class="form-control form-control-sm me-2" placeholder="User ID" value="1" required>
+                    <button class="btn btn-outline-warning btn-sm">Run</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-card p-3 hover-card h-100">
+                <h6 class="text-primary">AvgPetAgeInShelter(shelter_id)</h6>
+                <form method="POST" class="d-flex">
+                    <input type="hidden" name="action" value="RunAvgPetAgeInShelter">
+                    <input type="number" name="shelter_id" class="form-control form-control-sm me-2" placeholder="Shelter ID" value="1" required>
+                    <button class="btn btn-outline-warning btn-sm">Run</button>
+                </form>
             </div>
         </div>
     </div>
 
-    <h4 class="text-info mb-3">Database State Comparison</h4>
-    <div class="row">
-        <div class="col-lg-6 mb-4">
-            <div class="card bg-card p-3">
-                <h5 class="text-info">Before Execution</h5>
-                <div class="accordion" id="beforeAccordion">
-                    {% for table, rows in before.items() %}
-                    <div class="accordion-item bg-card">
-                        <h2 class="accordion-header" id="beforeHeading{{ loop.index }}">
-                            <button class="accordion-button collapsed bg-card" style="color:#ced4da;" type="button" data-bs-toggle="collapse" data-bs-target="#beforeCollapse{{ loop.index }}">
-                                {{ table }} ({{ rows|length }} rows)
-                            </button>
-                        </h2>
-                        <div id="beforeCollapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#beforeAccordion">
-                            <div class="accordion-body">
-                                {% if rows %}
-                                <div class="table-responsive">
-                                    <table class="table table-dark table-striped table-hover small mb-0">
-                                        <thead>
-                                            <tr>
-                                                {% for key in rows[0].keys() %}
-                                                <th>{{ key }}</th>
-                                                {% endfor %}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for row in rows %}
-                                            <tr>
-                                                {% for val in row.values() %}
-                                                <td>{{ val }}</td>
-                                                {% endfor %}
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                {% else %}
-                                <p class="text-muted mb-0">No rows.</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6 mb-4">
-            <div class="card bg-card p-3">
-                <h5 class="text-info">After Execution</h5>
-                <div class="accordion" id="afterAccordion">
-                    {% for table, rows in after.items() %}
-                    <div class="accordion-item bg-card">
-                        <h2 class="accordion-header" id="afterHeading{{ loop.index }}">
-                            <button class="accordion-button collapsed bg-card" style="color:#ced4da;" type="button" data-bs-toggle="collapse" data-bs-target="#afterCollapse{{ loop.index }}">
-                                {{ table }} ({{ rows|length }} rows)
-                            </button>
-                        </h2>
-                        <div id="afterCollapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#afterAccordion">
-                            <div class="accordion-body">
-                                {% if rows %}
-                                <div class="table-responsive">
-                                    <table class="table table-dark table-striped table-hover small mb-0">
-                                        <thead>
-                                            <tr>
-                                                {% for key in rows[0].keys() %}
-                                                <th>{{ key }}</th>
-                                                {% endfor %}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for row in rows %}
-                                            <tr>
-                                                {% for val in row.values() %}
-                                                <td>{{ val }}</td>
-                                                {% endfor %}
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                {% else %}
-                                <p class="text-muted mb-0">No rows.</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
 
     {% if procedure_results %}
     <div class="card bg-card p-3 mb-4">

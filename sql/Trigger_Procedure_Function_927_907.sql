@@ -158,6 +158,7 @@ DELIMITER //
 CREATE PROCEDURE AddUser (
     IN p_name VARCHAR(100),
     IN p_email VARCHAR(150),
+    IN p_password_hash VARCHAR(256),
     IN p_phone VARCHAR(20),
     IN p_role ENUM('general', 'adopter', 'shelter_worker', 'admin')
 )
@@ -173,8 +174,8 @@ BEGIN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Email already exists. Please use a different one.';
     ELSE
-        INSERT INTO User (name, email, phone, role)
-        VALUES (p_name, p_email, p_phone, p_role);
+        INSERT INTO User (name, email, password_hash, phone, role)
+        VALUES (p_name, p_email, p_password_hash, p_phone, p_role);
     END IF;
 END;
 //

@@ -14,6 +14,7 @@ CREATE TABLE User (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
+    password_hash VARCHAR(256) NOT NULL, 
     phone VARCHAR(20),
     role ENUM('general', 'adopter', 'shelter_worker', 'admin') DEFAULT 'general',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -62,13 +63,6 @@ CREATE TABLE Pet (
     FOREIGN KEY (type_id) REFERENCES PetType(type_id),
     CONSTRAINT unique_pet_per_shelter UNIQUE (name, shelter_id),
     CONSTRAINT chk_pet_status CHECK (status IN ('Available', 'Adopted', 'Medical Hold'))
-);
-
-CREATE TABLE PetImages (
-    image_id INT AUTO_INCREMENT PRIMARY KEY,
-    pet_id INT NOT NULL,
-    image_url VARCHAR(255) NOT NULL,
-    FOREIGN KEY (pet_id) REFERENCES Pet(pet_id) ON DELETE CASCADE
 );
 
 CREATE TABLE AdoptionApplication (
@@ -137,18 +131,18 @@ JOIN Shelter s ON p.shelter_id = s.shelter_id;
 
 -- ================== INSERT DATA ==================
 
-INSERT INTO User (name, email, phone, role) VALUES
-('Shakirth Anisha', 'anisha@petsystem.com', '9876543210', 'admin'),
-('Samridhi Shreya', 'samridhi@petsystem.com', '9876501234', 'shelter_worker'),
-('Angad Bhalla', 'angad@petsystem.com', '9876003210', 'adopter'),
-('Suchitra Shankar', 'suchitra@petsystem.com', '9876123456', 'adopter'),
-('Tejas R', 'tejas@petsystem.com', '9988776655', 'shelter_worker'),
-('Sanjana Saxena', 'sanjana@petsystem.com', '9123456789', 'general'),
-('Risu Kumari', 'risu@petsystem.com', '9765432109', 'adopter'),
-('Taylor Swift', 'taylor@petsystem.com', '9000011122', 'adopter'),
-('Harry Styles', 'harry@petsystem.com', '7086011282', 'adopter'),
-('Emma Stone', 'emma@petsystem.com', '7086921122', 'shelter_worker'),
-('John Wick', 'john@petsystem.com', '8012346772', 'shelter_worker');
+INSERT INTO User (name, email, password_hash, phone, role) VALUES
+('Shakirth Anisha', 'anisha@petsystem.com', SHA2('1234', 256), '9876543210', 'admin'),
+('Samridhi Shreya', 'samridhi@petsystem.com', SHA2('sam123', 256), '9876501234', 'shelter_worker'),
+('Angad Bhalla', 'angad@petsystem.com', SHA2('anga205', 256), '9876003210', 'adopter'),
+('Suchitra Shankar', 'suchitra@petsystem.com', SHA2('suchichi', 256), '9876123456', 'adopter'),
+('Tejas R', 'tejas@petsystem.com', SHA2('maggie', 256), '9988776655', 'shelter_worker'),
+('Sanjana Saxena', 'sanjana@petsystem.com', SHA2('sanJ1', 256), '9123456789', 'general'),
+('Risu Kumari', 'risu@petsystem.com', SHA2('yay@123', 256), '9765432109', 'adopter'),
+('Taylor Swift', 'taylor@petsystem.com', SHA2('taytay13', 256), '9000011122', 'adopter'),
+('Harry Styles', 'harry@petsystem.com', SHA2('ilovelouis', 256), '7086011282', 'adopter'),
+('Emma Stone', 'emma@petsystem.com', SHA2('slay', 256), '7086921122', 'shelter_worker'),
+('John Wick', 'john@petsystem.com', SHA2('ilovemydog', 256), '8012346772', 'shelter_worker');
 
 -- SHELTERS
 INSERT INTO Shelter (name, location, contact)
@@ -191,16 +185,6 @@ VALUES
 ('Coco', 'M', 1, 'Owner could not care for it', 'Available', 3, 4),
 ('Coffee', 'F', 2, 'Rescued stray cat', 'Adopted', 2, 7);
 
--- PET IMAGES
-INSERT INTO PetImages (pet_id, image_url)
-VALUES
-(1, "https://i.anga.codes/i/5zaft9djp9rh/ShihTzu.png"),
-(1, ""),
-(1, ""),
-(1, ""),
-(1, ""),
-(1, ""),
-(1, "");
 
 -- ADOPTION APPLICATIONS
 INSERT INTO AdoptionApplication (status, reason, approved_by, pet_id, user_id)
@@ -218,6 +202,7 @@ INSERT INTO Payment (method, amount, status, user_id, adoption_app_id)
 VALUES
 ('Credit Card', 1500.00, 'Completed', 3, 2),   -- Angad pays for adopting Yuki
 ('UPI', 200.00, 'Pending', 4, 1),             -- Suchitra’s payment is pending for Zoomie
+('UPI', 500.00, 'Pending', 8, 4),         -- Taylor’s payment completed for Coco
 ('PayPal', 800.00, 'Completed', 8, 3),         -- Taylor’s payment completed for Coco
 ('Debit Card', 950.00, 'Failed', 9, 5),         -- Taylor’s payment completed for Coco
 ('Credit Card', 950.00, 'Completed', 9, 5);         -- Taylor’s payment completed for Coco
