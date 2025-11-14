@@ -7,6 +7,25 @@
 <div class="alert alert-{{ alert_class }} text-center mt-4">{{ message }}</div>
 {% endif %}
 
+<div class="d-flex justify-content-center gap-3 mb-4 flex-wrap">
+    {% set current_status = request.args.get('status') %}
+    <a href="?status=All" class="btn btn-outline-secondary {% if not current_status or current_status == 'All' %}active{% endif %}">
+        All
+    </a>
+    <a href="?status=Pending" class="btn btn-outline-warning {% if current_status == 'Pending' %}active{% endif %}">
+        Pending
+    </a>
+    <a href="?status=Completed" class="btn btn-outline-success {% if current_status == 'Completed' %}active{% endif %}">
+        Completed
+    </a>
+    <a href="?status=Failed" class="btn btn-outline-danger {% if current_status == 'Failed' %}active{% endif %}">
+        Failed
+    </a>
+    <a href="?status=Refunded" class="btn btn-outline-info {% if current_status == 'Refunded' %}active{% endif %}">
+        Refunded
+    </a>
+</div>
+
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     {% for p in payments %}
     <div class="col">

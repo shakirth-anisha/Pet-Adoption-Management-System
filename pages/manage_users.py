@@ -19,6 +19,10 @@ def handle_manage_users(request):
             except Exception as e:
                 message = f"Error updating user role: {str(e)}"
                 alert_class = "danger"
+
+    filter_role = request.args.get('role')
+    if not filter_role or filter_role == 'All':
+        filter_role = None
     
     query = """
         SELECT 
@@ -36,11 +40,17 @@ def handle_manage_users(request):
              FROM AdoptionApplication aa 
              WHERE aa.user_id = u.user_id) AS total_applications
         FROM User u
-        ORDER BY u.created_at DESC
     """
+    params = []
+
+    if filter_role:
+        query += " WHERE u.role = %s"
+        params.append(filter_role)
+
+    query += " ORDER BY u.created_at DESC"
     
     try:
-        users = run_query(query, fetch=True) or []
+        users = run_query(query, tuple(params), fetch=True) or []
     except Exception as e:
         users = []
         if not message:
@@ -50,6 +60,7 @@ def handle_manage_users(request):
     return {
         "users": users,
         "message": message,
-        "alert_class": alert_class
+        "alert_class": alert_class,
+        "filter_role": filter_role
     }
 

@@ -2,6 +2,23 @@
 
 {% block content %}
 <h1 class="text-center mt-4 mb-4 text-secondary">Manage Pets</h1>
+
+<div class="d-flex justify-content-center gap-3 mb-4 flex-wrap">
+    {% set current_status = request.args.get('status') %}
+    <a href="?status=All" class="btn btn-outline-secondary {% if not current_status or current_status == 'All' %}active{% endif %}">
+        All
+    </a>
+    <a href="?status=Available" class="btn btn-outline-success {% if current_status == 'Available' %}active{% endif %}">
+        Available
+    </a>
+    <a href="?status=Adopted" class="btn btn-outline-primary {% if current_status == 'Adopted' %}active{% endif %}">
+        Adopted
+    </a>
+    <a href="?status=Medical%20Hold" class="btn btn-outline-warning {% if current_status == 'Medical Hold' %}active{% endif %}">
+        Medical Hold
+    </a>
+</div>
+
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     {% for pet in pets %}
     <div class="col">

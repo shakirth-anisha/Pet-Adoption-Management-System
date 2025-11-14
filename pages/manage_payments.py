@@ -48,18 +48,30 @@ def handle_manage_payments(request):
             message = f"Error updating payment #{pay_id}: {e}"
             alert_class = "danger"
 
+    filter_status = request.args.get('status')
+    if not filter_status or filter_status == 'All':
+        filter_status = None
+
+    query = """
+        SELECT 
+            p.pay_id, p.method, p.amount, p.status, p.date,
+            u.name AS user_name,
+            a.pet_id, a.status AS app_status
+        FROM Payment p
+        JOIN User u ON p.user_id = u.user_id
+        LEFT JOIN AdoptionApplication a 
+            ON p.adoption_app_id = a.adopt_app_id
+    """
+    params = []
+
+    if filter_status:
+        query += " WHERE p.status = %s"
+        params.append(filter_status)
+
+    query += " ORDER BY p.date DESC"
+
     try:
-        payments = run_query("""
-            SELECT 
-                p.pay_id, p.method, p.amount, p.status, p.date,
-                u.name AS user_name,
-                a.pet_id, a.status AS app_status
-            FROM Payment p
-            JOIN User u ON p.user_id = u.user_id
-            LEFT JOIN AdoptionApplication a 
-                ON p.adoption_app_id = a.adopt_app_id
-            ORDER BY p.date DESC
-        """, fetch=True)
+        payments = run_query(query, tuple(params), fetch=True)
 
     except Exception as e:
         payments = []
@@ -70,5 +82,6 @@ def handle_manage_payments(request):
     return {
         "payments": payments,
         "message": message,
-        "alert_class": alert_class
+        "alert_class": alert_class,
+        "filter_status": filter_status
     }

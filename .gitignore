@@ -8,7 +8,7 @@ venv/
 
 # VS Code
 .vscode/
-./Reports/Requirement_Checklist.md
+Reports/Req.md
 
 # macOS
 .DS_Store
